@@ -3,9 +3,11 @@
   "Ins":[
     {
       "AsFile": "DataDecomposed/Equipment/Subsystem_Hardpoints/perk_1",
-      "Target": "editable",
-      "Command": "replace",
-      "Data": true
+      "Target": "$",
+      "Command": "merge",
+      "Data": {
+        "editable":  true,
+      }
     },
     {
       "AsFile": "DataDecomposed/Equipment/Subsystem_Hardpoints/perk_2",

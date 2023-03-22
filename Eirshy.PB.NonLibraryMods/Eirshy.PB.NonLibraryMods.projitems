@@ -10,13 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)eirshy-defused\metadata.yaml" />
+    <None Include="$(MSBuildThisFileDirectory)eirshy-shieldfix\metadata.yaml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\defuse-as-parents.json" />
-    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\Equipment\Part_Presets\eirshy-defuse.json" />
-    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\perks-editable.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\Equipment\Subsystem_Hardpoints\" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\defuse-as-parents.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\part-parent.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\perks-editable.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-shieldfix\ConfigEdits\shield-rebalance.json" />
   </ItemGroup>
 </Project>
