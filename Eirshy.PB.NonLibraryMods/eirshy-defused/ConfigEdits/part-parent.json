@@ -2,6 +2,7 @@
   "Disabled": false,
   "Ins":[
     {
+      "AsFile": "DataDecomposed/Equipment/Part_Presets/eirshy-defuse",
       "Command": "new",
       "Data": {
         "hidden": true,

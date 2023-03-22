@@ -2,19 +2,19 @@
   "Disabled": false,
   "Ins":[
     {
-      "AsFile": "Equipment/Subsystem_Hardpoints/perk_1",
+      "AsFile": "DataDecomposed/Equipment/Subsystem_Hardpoints/perk_1",
       "Target": "editable",
       "Command": "replace",
       "Data": true
     },
     {
-      "AsFile": "Equipment/Subsystem_Hardpoints/perk_2",
+      "AsFile": "DataDecomposed/Equipment/Subsystem_Hardpoints/perk_2",
       "Target": "editable",
       "Command": "replace",
       "Data": true
     },
     {
-      "AsFile": "Equipment/Subsystem_Hardpoints/perk_3",
+      "AsFile": "DataDecomposed/Equipment/Subsystem_Hardpoints/perk_3",
       "Target": "editable",
       "Command": "replace",
       "Data": true
