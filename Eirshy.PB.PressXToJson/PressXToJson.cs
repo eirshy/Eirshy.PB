@@ -38,14 +38,16 @@ namespace Eirshy.PB.PressXToJson {
             Logger.StartOrphanage(Config.Logs.Orphan);
             if(configLoadFailure != null) {
                 Logger.Orphan.Error("Error loading Config File", configLoadFailure);
+            } else {
+                Managers.JsonModLoader.Init(harmony);
+                Managers.JsonModApplier.Init(harmony);
+                Managers.ReferenceFilesManager.Init(harmony);
+                Managers.LoadStateManager.Init(harmony);
+
+                Fixes.FixesRollup.ApplyFixes(harmony);
             }
-
-
-            Managers.JsonModLoader.Init(harmony);
-            Managers.JsonModApplier.Init(harmony);
-            Managers.ReferenceFilesManager.Init(harmony);
-            
-            Fixes.FixesRollup.ApplyFixes(harmony);
+            //if we have anything, you need to hear about it.
+            Logger.Orphan.Flush();
         }
     }
 }

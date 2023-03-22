@@ -61,12 +61,13 @@ namespace Eirshy.PB.PressXToJson.Entities {
         /// Unloads our error spool into the logger.
         /// </summary>
         internal void LogErrors() {
-            var flushing = _errors;
-            if(flushing.Count == 0) return;
-            _errors = new List<Exception>();
-            var name =  Log.Custody == LoggingCustody.PerFile ? ShortName: Name;
-            foreach(var ex in flushing) {
-                Log.Error(name, ex);
+            if(_errors.Count > 0) {
+                var flushing = _errors;
+                _errors = new List<Exception>();
+                var name =  Log.Custody == LoggingCustody.PerFile ? ShortName: Name;
+                foreach(var ex in flushing) {
+                    Log.Error(name, ex);
+                }
             }
             foreach(var ins in Ins) {
                 ins.LogErrors();

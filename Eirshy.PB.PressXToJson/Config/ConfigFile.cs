@@ -20,7 +20,7 @@ namespace Eirshy.PB.PressXToJson.Config {
                 $" applied all things we do."
             ;
         }
-        public bool LessLazyLoading { get => false; }
+        public bool LessLazyLoading => false;
 
 
         public RefOutput RefOutput { get; set; } = new RefOutput();

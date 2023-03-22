@@ -98,7 +98,7 @@
     <Compile Include="Managers\JsonModApplier.cs" />
     <Compile Include="DataProcessing\DataLinker.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Managers\InitialLoadManager.cs" />
+    <Compile Include="Managers\LoadStateManager.cs" />
     <Compile Include="Managers\ReferenceFilesManager.cs" />
     <Compile Include="PressXToJson.cs" />
     <Compile Include="Managers\JsonModLoader.cs" />

@@ -30,7 +30,7 @@ namespace Eirshy.PB.PressXToJson {
         public string Name { get; private set; }
         public LoggingLevel Level { get; private set; }
         public LoggingCustody Custody { get; private set; }
-        public bool Buffered { get; private set; } = true;
+        public bool Buffered => true;
 
         private string _logFile = null;
         public string LogFile => _logFile ?? Orphan?._logFile ?? DEFAULT_FILE;//safety, we coalesce to this.
@@ -70,7 +70,6 @@ namespace Eirshy.PB.PressXToJson {
                 Level = le.Level,
                 Custody = le.Custody,
                 Name = name,
-                Buffered = true,
             };
             var ret = _adopted.GetOrAdd(name, fresh);
             if(ret == fresh && file != null) {
@@ -84,7 +83,6 @@ namespace Eirshy.PB.PressXToJson {
             Orphan = new Logger() {
                 Level = level,
                 Custody = LoggingCustody.AsOrphan,
-                Buffered = false,
             };
         }
         public static void TransferOrphanage() {
@@ -108,7 +106,6 @@ namespace Eirshy.PB.PressXToJson {
             Orphan._logFile = null;
         }
         
-
 
         readonly Lazy<ConcurrentQueue<string>> _msg = new Lazy<ConcurrentQueue<string>>(
             ()=>new ConcurrentQueue<string>(), LazyThreadSafetyMode.PublicationOnly
@@ -159,33 +156,26 @@ namespace Eirshy.PB.PressXToJson {
         }
 
 
-        public static void FlushAndDeregAdopted() {
-            var all = _adopted.Values.ToList();
-            _adopted.Clear();
-            foreach(var l in all) {
+        /// <summary>
+        /// Includes pushing error message logs out as well.
+        /// </summary>
+        /// <param name="force">If true, we'll ignore whether LoadStateManager says init is done.</param>
+        /// <param name="alsoDeregister">If true we'll also dregister all non-Orphan loggers. Don't normally do this. Thread-unsafe.</param>
+        public static void FullFlush(bool force = false, bool alsoDeregister = false) {
+            if(!force && !Managers.LoadStateManager.IsInitFinished) return;
+            Managers.JsonModLoader.LogAllErrors();
+            var adopted = _adopted.Values.ToList();
+            if(alsoDeregister) _adopted.Clear();
+            foreach(var l in adopted) {
                 try {
                     l.Flush();
                 } catch(Exception ex) {
                     Orphan.Error($"Flush error on Logger {l.Name}", ex);
                 }
             }
+            Orphan.Flush();
         }
-        public static void FlushAdopted() {
-            var all = _adopted.Values.ToList();
-            foreach(var l in all) {
-                try {
-                    l.Flush();
-                } catch(Exception ex) {
-                    Orphan.Error($"Flush error on Logger {l.Name}", ex);
-                }
-            }
-        }
-        public static void FlushAllLate() {
-            if(Managers.InitialLoadManager.IsInitFinished) {
-                FlushAdopted();
-                Orphan.Flush();
-            }
-        }
+        
 
         public void Info(string message) {
             switch(Level) {
@@ -200,17 +190,17 @@ namespace Eirshy.PB.PressXToJson {
                 case LoggingLevel.ErrorOnly:
                 case LoggingLevel.Info:
                     if(ex != null) {
-                        _log($"{message} -- {ex.GetType()} :: {ex?.Message ?? ""}");
+                        _log($"{message} -- {ex.GetType().Name} :: {ex?.Message ?? ""}");
                     } else _log(message);
                     break;
 
                 case LoggingLevel.ErrorVerbose:
                 case LoggingLevel.InfoVerbose:
                     if(ex != null) {
-                        var msg = $"{message} -- {ex.GetType()} :: {ex?.Message ?? ""}";
+                        var msg = $"{message} -- {ex.GetType().Name} :: {ex?.Message ?? ""}";
                         while(ex.InnerException != null) {
                             ex = ex.InnerException;
-                            msg += $"\n  :: Inner : {ex.GetType()} :: {ex?.Message ?? ""}";
+                            msg += $"\n  :: Inner : {ex.GetType().Name} :: {ex?.Message ?? ""}";
                         }
                         _log(msg);
                     } else _log(message);

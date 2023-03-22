@@ -62,7 +62,7 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                 }
             }
             __result = target.ToType<T>();
-            Logger.FlushAllLate();
+            Logger.FullFlush();
         }
 
         public void Apply(List<Instruction> instructions, SortedDictionary<string, T> dataInternal) {
@@ -84,7 +84,7 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
             Logger.Orphan.Info($"Saving {cache.Cached().Count()} entries");
 
             cache.Save();
-            Logger.FlushAllLate();
+            Logger.FullFlush();
         }
 
 
@@ -134,9 +134,9 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
             } else if (dataInternal is SortedDictionary<string, T> dict){
                 WriteReferencesMulti(path, missingOnly, dict);
             } else {
-                Logger.Orphan.Error($"Cannot write reference file for {typeof(T).Name} -- dataInternal presented as {dataInternal} of type {dataInternal?.GetType()}");
+                Logger.Orphan.Error($"Cannot write reference file for {typeof(T).Name} -- dataInternal presented as {dataInternal} of type {dataInternal?.GetType().Name}");
+                Logger.FullFlush();
             }
-            Logger.FlushAllLate();
         }
 
         public void WriteReference(string path, bool missingOnly, T dataInternal) {
@@ -148,21 +148,16 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                 Logger.Orphan.ReferenceFileError(typeof(T), "Singleton", ex);
             }
         }
-        public void WriteReferencesMulti(string root, bool missingOnly, SortedDictionary<string,T> dataInternal) {
+        public void WriteReferencesMulti(string root, bool missingOnly, SortedDictionary<string, T> dataInternal) {
             try {
                 _ = Directory.CreateDirectory(root);
             } catch(Exception ex) {
                 Logger.Orphan.ReferenceFileError(typeof(T), "_Directories", ex);
             }
-            bool logged = false;
             foreach(var kvp in dataInternal) {
                 try {
                     var path = Path.Combine(root, kvp.Key) + ".json";
                     if(File.Exists(path) && missingOnly) continue;
-                    if(!logged) {
-                        logged = true;
-                        Logger.Orphan.Info($"RefOut for {typeof(T).Name}");
-                    }
                     Logger.Orphan.Info($"Attempting {typeof(T).Name} @ '{kvp.Key}'");
                     File.WriteAllText(path, kvp.Value.ToJson());
                 } catch(Exception ex) {

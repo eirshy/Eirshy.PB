@@ -18,7 +18,7 @@ using Eirshy.PB.PressXToJson.DataProcessing;
 namespace Eirshy.PB.PressXToJson.Managers {
     internal static class JsonModLoader {
         private static Type THIS => typeof(JsonModLoader);
-        static readonly Dictionary<string, ModSettings> _allMods = new Dictionary<string, ModSettings>();
+        static Dictionary<string, ModSettings> _allMods { get; } = new Dictionary<string, ModSettings>();
         public static IReadOnlyDictionary<string, ModSettings> AllJsonMods => _allMods;
         public static void LogAllErrors() => _allMods.Values.ForEach(mod => mod.LogAllErrors());
 
@@ -29,7 +29,6 @@ namespace Eirshy.PB.PressXToJson.Managers {
             const BindingFlags FLAGS = BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic;
             var loadMods = (
                 mm: typeof(ModManager).GetMethod(nameof(ModManager.LoadMods), FLAGS),
-                pre: THIS.GetMethod(nameof(FullReset), FLAGS),
                 post: THIS.GetMethod(nameof(FinalizeLoadedMods), FLAGS)
             );
             var tryloadEdits = (
@@ -39,26 +38,15 @@ namespace Eirshy.PB.PressXToJson.Managers {
             try {
                 if(loadMods.mm is null) throw new InvalidProgramException($"Can't Find {nameof(loadMods)}!");
                 if(tryloadEdits.mm is null) throw new InvalidProgramException($"Can't Find {nameof(tryloadEdits)}!");
-                _ = harmony.Patch(loadMods.mm, prefix: new HarmonyMethod(loadMods.pre), postfix: new HarmonyMethod(loadMods.post));
+                _ = harmony.Patch(loadMods.mm, postfix: new HarmonyMethod(loadMods.post));
                 _ = harmony.Patch(tryloadEdits.mm, prefix: new HarmonyMethod(tryloadEdits.pre));
             } catch(Exception ex) {
                 Logger.Orphan.HookError("Loader", ex);
             }
         }
         
-        public static void FullReset() {
-            LogAllErrors();
+        public static void Reset() {
             _allMods.Clear();
-
-            DataLinker.ClearLinkerCache();
-            DataLinker.ClearProcessorCache();
-
-            JsonModApplier.Reset();
-            ReferenceFilesManager.Reset();
-            InitialLoadManager.Reset();
-
-            Logger.FlushAndDeregAdopted();
-            Logger.SellOrphanage();
         }
         
         /// <remarks>
