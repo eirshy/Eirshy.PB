@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D28AC915-AD69-47BD-9E1F-5E044F5118A3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Eirshy.PB.PressXToJson</RootNamespace>
+    <AssemblyName>Eirshy.PB.PressXToJson</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\refs\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\refs\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\refs\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Entitas">
+      <HintPath>..\refs\Entitas.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\refs\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\refs\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\refs\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config\ConfigFile.cs" />
+    <Compile Include="Config\Logs.cs" />
+    <Compile Include="Config\LogsEntry.cs" />
+    <Compile Include="Config\RefOutput.cs" />
+    <Compile Include="Entities\ModSettings.cs" />
+    <Compile Include="Entities\ModSettingsFile.cs" />
+    <Compile Include="Enums\LoggingLevel.cs" />
+    <Compile Include="Enums\LoggingCustody.cs" />
+    <Compile Include="Enums\RefOutputFreq.cs" />
+    <Compile Include="Exceptions\AutoTypingException.cs" />
+    <Compile Include="Exceptions\CommandTargetTypeException.cs" />
+    <Compile Include="Exceptions\CommandException.cs" />
+    <Compile Include="Exceptions\CommandTokenTypeException.cs" />
+    <Compile Include="Exceptions\InstructionParseException.cs" />
+    <Compile Include="InstructionProcessing\DataLinkerCache.cs" />
+    <Compile Include="InstructionProcessing\InstructionPreProcessor.cs" />
+    <Compile Include="InstructionProcessing\PathedInstructionProcessor.cs" />
+    <Compile Include="Entities\Instruction.cs" />
+    <Compile Include="Entities\InstructionsFile.cs" />
+    <Compile Include="Enums\Command.cs" />
+    <Compile Include="Enums\CommandPriority.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Fixes\FixesRollup.cs" />
+    <Compile Include="Fixes\Functions\Equipment\TrimSystemsByTagFilterPatches.cs" />
+    <Compile Include="JsonExtensions.cs" />
+    <Compile Include="Managers\JsonModApplier.cs" />
+    <Compile Include="InstructionProcessing\DataLinker.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Managers\InitialLoadManager.cs" />
+    <Compile Include="Managers\ReferenceFilesManager.cs" />
+    <Compile Include="PressXToJson.cs" />
+    <Compile Include="Managers\JsonModLoader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="metadata.yaml" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
