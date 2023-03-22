@@ -4,7 +4,7 @@
  nothing about the game itself- it merely provides a more
  powerful language for mod authors to use.
 
-### Installation - BETA AVAILBALBE
+### Installation - BETA AVAILBALBE -- v0.5a
 Simply snag the latest in the 00-RELEASE folder, and extract it and
  enable it like any other mod.
  As we have to hook a number of mod-loading actions, you should
@@ -27,6 +27,14 @@ As you might guess, this adds a JSON-based version of
   * When init finishes, confirm all that we touch loaded
   * Guarantees syntax errors are found immediately
   * Can clean up all of our data right after as we done
+* Partial ownership of types for logging
+  * InfoVerbose dumping deserialized round-trips is useful
+  * With even just 2 json mods, not so much.
+  * Should try to detect which mods modified a given file
+    and log under that mod if it's only that one.
+  * Maybe also make Orphan look at all levels that modified
+    a file and take the most permissive if there's more than
+    one?
 * Real reference docs
 * Proper schema definitions for our internals
 * Schema "generator" for game classes.
