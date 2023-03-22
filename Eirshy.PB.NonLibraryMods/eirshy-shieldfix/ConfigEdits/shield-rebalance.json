@@ -1,0 +1,57 @@
+{
+  "Disabled": false,
+  "Ins":[
+    {
+      "Disabled": true,
+      "AsFile": "DataDecomposed/Equipment/Subsystems/wpn_main_shield_01",
+      "Command": "Merge",
+      "Target": "stats",
+      "Data": {
+        "hp": { "value": 550 },
+        "barrier": { "value": 100 },
+        "mass": { "value": 10 },
+      },
+    },
+    {
+      "AsFile": "DataDecomposed/Equipment/Subsystems/wpn_main_shield_02",
+      "Command": "Merge",
+      "Target": "stats",
+      "Data": {
+        "hp": { "value": 225 },
+        "barrier": { "value": 100 },
+        "mass": { "value": 5 },
+      },
+    },
+    {
+      "AsFile": "DataDecomposed/Equipment/Subsystems/wpn_main_shield_03",
+      "Command": "Merge",
+      "Target": "stats",
+      "Data": {
+        "hp": { "value": 160 },
+        "barrier": { "value": 100 },
+        "mass": { "value": 4 },
+      },
+    },
+    {
+      "Disabled": true,
+      "AsFile": "DataDecomposed/Equipment/Subsystems/wpn_main_shield_04",
+      "Command": "Merge",
+      "Target": "stats",
+      "Data": {
+        "hp": { "value": 10 },
+        "barrier": { "value": 190 },
+        "mass": { "value": 3 },
+      },
+    },
+    {
+      "AsFile": "DataDecomposed/Equipment/Subsystems/wpn_main_shield_05",
+      "Command": "Merge",
+      "Target": "stats",
+      "Data": {
+        "hp": { "value": 355 },
+        "barrier": { "value": 100 },
+        "mass": { "value": 7 },
+      },
+    },
+  ]
+}

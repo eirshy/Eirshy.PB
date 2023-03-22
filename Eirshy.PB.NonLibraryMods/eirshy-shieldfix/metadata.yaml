@@ -1,0 +1,18 @@
+id: eirshy-shieldfix
+ver: 1.0
+includesConfigOverrides: false
+includesConfigEdits: true
+includesLibraries: false
+includesTextures: false
+includesLocalizationEdits: false
+includesLocalizations: false
+gameVersionMin: 1.0.2
+gameVersionMax: 
+name: 'Shield Fix'
+desc: |
+  !!! Requires Eirshy.PB.PressXToJson !!!
+  Fun fact. In terms of weight to unleveled HP, the Firewall and Stance shields are at 1:50. Svalinn meanwhile is 1:65.... but Ajax is 1:62.5 and Tower is 1:66.7!
+  So Yeah.
+  I've left Tower and Svalinn alone, and buffed everybody else up to Svalinn's 1:65 level- be that by lowering mass or adding/rearranging stats.
+  While I can agree that more weight should get slightly better returns, Firewall was the second-heaviest and nerfing Tower's ratio would risk making it unusable.
+  I've also standardized the Barrier levels (outside of Tower) to the same level as Stance/Svalinn, as that "felt right" so to speak.
