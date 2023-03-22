@@ -4,12 +4,10 @@
  nothing about the game itself- it merely provides a more
  powerful language for mod authors to use.
 
-### Installation - NOT ACTUALLY READY YET
-Once it is:
-
-Simply download the "Release.zip", and extract it in the standard
- mod folder. Then, enable it through the in-game
- menu. As we have to hook a number of mod-loading actions, you should
+### Installation - BETA AVAILBALBE
+Simply snag the latest in the 00-RELEASE folder, and extract it and
+ enable it like any other mod.
+ As we have to hook a number of mod-loading actions, you should
  place it ***first*** in your mod load order.
 
 
