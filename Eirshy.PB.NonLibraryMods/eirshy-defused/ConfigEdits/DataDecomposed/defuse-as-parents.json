@@ -1,0 +1,35 @@
+{
+  "Disabled": false,
+  "Ins":[
+    {
+      "AsFile": "Equipment/Part_Presets/body_arm",
+      "Target": "parents",
+      "Command": "concat",
+      "Data": [{"key": "eirshy-defuse"}]
+    },
+    {
+      "AsFile": "Equipment/Part_Presets/body_top",
+      "Target": "parents",
+      "Command": "concat",
+      "Data": [{"key": "eirshy-defuse"}]
+    },
+    {
+      "AsFile": "Equipment/Part_Presets/body_bottom",
+      "Target": "parents",
+      "Command": "concat",
+      "Data": [{"key": "eirshy-defuse"}]
+    },
+    {
+      "AsFile": "Equipment/Part_Presets/wpn_root",
+      "Target": "parents",
+      "Command": "concat",
+      "Data": [{"key": "eirshy-defuse"}]
+    },
+    {
+      "AsFile": "Equipment/Part_Presets/wpn_shield",
+      "Target": "parents",
+      "Command": "concat",
+      "Data": [{"key": "eirshy-defuse"}]
+    }
+  ]
+}

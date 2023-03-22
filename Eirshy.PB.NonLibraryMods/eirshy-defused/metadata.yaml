@@ -1,0 +1,15 @@
+id: eirshy-defused
+ver: 1.0
+includesConfigOverrides: false
+includesConfigEdits: true
+includesLibraries: false
+includesTextures: false
+includesLocalizationEdits: false
+includesLocalizations: false
+gameVersionMin: 1.0.2
+gameVersionMax: 
+name: 'Defused'
+desc: |
+  !!! Requires Eirshy.PB.PressXToJson !!!
+  De-fuses all slots on rank 1-3 gear at item creation, so you no longer feel (as) obligated to savescum or save-edit for part perk rolls. 
+  Doesn't fix the fact that all subsystems at time of writing sort by their hidden (and not scaled) level.

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eirshy.PB.PressXToJson", "Eirshy.PB.PressXToJson\Eirshy.PB.PressXToJson.csproj", "{D28AC915-AD69-47BD-9E1F-5E044F5118A3}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Eirshy.PB.NonLibraryMods", "Eirshy.PB.NonLibraryMods\Eirshy.PB.NonLibraryMods.shproj", "{3DC78C88-F154-46A8-9559-24974FCFC1CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,5 +23,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6E6708F5-776E-4837-A03F-6FE25103800F}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Eirshy.PB.NonLibraryMods\Eirshy.PB.NonLibraryMods.projitems*{3dc78c88-f154-46a8-9559-24974fcfc1ce}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

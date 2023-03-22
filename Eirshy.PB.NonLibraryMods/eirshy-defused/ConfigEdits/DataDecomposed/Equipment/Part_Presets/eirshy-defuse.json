@@ -1,0 +1,35 @@
+{
+  "Disabled": false,
+  "Ins":[
+    {
+      "Command": "new",
+      "Data": {
+        "hidden": true,
+        "parents": null,
+        "tags": null,
+        "genSteps":[{
+          "@TYPE": "SetHardpointState",
+          "fused": false,
+          "hardpointsTargeted":[
+            "perk_1",
+            "perk_2",
+            "perk_3",
+            "internal_aux_top_core",
+            "internal_aux_top_thrusters",
+            "internal_aux_weapon",
+            "internal_aux_defense",
+            "internal_aux_offense",
+            "internal_aux_mobility",
+          ],
+          "priority": 99,
+          "checks":[
+            {"@TYPE": "CheckPartRating",
+              "ratingMin": 0,
+              "ratingMax": 3
+            }
+          ]
+        }]
+      }
+    },
+  ]
+}

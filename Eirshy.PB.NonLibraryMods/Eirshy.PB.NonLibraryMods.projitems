@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3dc78c88-f154-46a8-9559-24974fcfc1ce</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Eirshy.PB.NonLibraryMods</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)eirshy-defused\metadata.yaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\defuse-as-parents.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\Equipment\Part_Presets\eirshy-defuse.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\perks-editable.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\DataDecomposed\Equipment\Subsystem_Hardpoints\" />
+  </ItemGroup>
+</Project>
