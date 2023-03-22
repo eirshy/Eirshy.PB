@@ -13,7 +13,8 @@ namespace Eirshy.PB.PressXToJson.Config {
         public const string FILENAME = "config.json";
 
         public string Docs_LessLazyLoading {
-            get => $"If set, we'll force-load all of the types that we know we've changed." +
+            get => $"PLACEHOLDER! CURRENTLY IGNORED!" +
+                $" If set, we'll force-load all of the types that we know we've changed." +
                 $" This allows for all syntax errors to be logged on game start, as well as" +
                 $" allows us to clean up all of our internal state tracking, as we'll have" +
                 $" applied all things we do."

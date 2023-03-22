@@ -20,17 +20,15 @@ As you might guess, this adds a JSON-based version of
  ease of development or compatibility.
 
 ## What are we waiting on?
-* Log buffers need a flush point still lol
-* "Semi-Lazy Loading" mode
-  * Detect when init load is done, confirm all that we touch loaded
-  * Gives us something to hook for our first dump of logs
-  * Guarantees syntax errors are found immediately
-  * Can clean up all of our data right after as nothing can change
 * Convert all my current "could be published" for examples
 * Basic reference docs for Commands
 * Basic reference docs for Instruction/InstructionFile Schemas
 
 ## What the Future Holds?
+* "Less-Lazy Loading" mode
+  * When init finishes, confirm all that we touch loaded
+  * Guarantees syntax errors are found immediately
+  * Can clean up all of our data right after as we done
 * Real reference docs
 * Proper schema definitions for our internals
 * Schema "generator" for game classes.
