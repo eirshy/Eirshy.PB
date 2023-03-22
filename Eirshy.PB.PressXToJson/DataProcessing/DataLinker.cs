@@ -16,7 +16,7 @@ using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Enums;
 using Eirshy.PB.PressXToJson.Exceptions;
 
-namespace Eirshy.PB.PressXToJson.InstructionProcessing {
+namespace Eirshy.PB.PressXToJson.DataProcessing {
     internal abstract class DataLinker {
         private static readonly ConcurrentDictionary<Type, DataLinker> _linkers = new ConcurrentDictionary<Type, DataLinker>();
         protected static PathedInstructionProcessor _pathed = new PathedInstructionProcessor(); //futureproofing in case I think of a cachable for it
@@ -93,10 +93,14 @@ namespace Eirshy.PB.PressXToJson.InstructionProcessing {
         protected JObject PathlessApply(Instruction ins, JObject target, DataLinkerCache<T> cache) {
             switch(ins.Command) {
                 //Object-Typed .. ... ... ... ... ... ... ... ...
-                #region New . ... ... ... ... ... ... ... ... ...
+                #region New & Overwrite . ... ... ... ... ... ...
 
                 case Command.New:
                     if(target != null) ins.Log.DidOverwrite(ins);
+                    return ins.DataObj;
+
+                case Command.Overwrite:
+                    //we don't need to log that we overwrote, that's expected.
                     return ins.DataObj;
 
                 #endregion
@@ -150,11 +154,15 @@ namespace Eirshy.PB.PressXToJson.InstructionProcessing {
             } catch(Exception ex) {
                 Logger.Orphan.ReferenceFileError(typeof(T), "_Directories", ex);
             }
-            Logger.Orphan.Info($"RefOut for {typeof(T).Name}");
+            bool logged = false;
             foreach(var kvp in dataInternal) {
                 try {
                     var path = Path.Combine(root, kvp.Key) + ".json";
                     if(File.Exists(path) && missingOnly) continue;
+                    if(!logged) {
+                        logged = true;
+                        Logger.Orphan.Info($"RefOut for {typeof(T).Name}");
+                    }
                     Logger.Orphan.Info($"Attempting {typeof(T).Name} @ '{kvp.Key}'");
                     File.WriteAllText(path, kvp.Value.ToJson());
                 } catch(Exception ex) {

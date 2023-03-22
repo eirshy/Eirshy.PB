@@ -26,6 +26,13 @@ namespace Eirshy.PB.PressXToJson.Enums {
         /// <br /><c>configs[FileName] = Data;</c>
         /// </summary>
         New,
+        /// <summary>
+        /// PATH TARGET: Ignored
+        /// <br />DATA TYPE: As File Type
+        /// <br />Creates a new instance of the file's type
+        /// <br /><c>configs[FileName] = Data;</c>
+        /// </summary>
+        Overwrite,
 
         #endregion
         #region Copy .. ... ... ... ... 

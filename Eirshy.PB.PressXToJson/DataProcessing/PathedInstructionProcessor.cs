@@ -7,7 +7,7 @@ using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Enums;
 using Eirshy.PB.PressXToJson.Exceptions;
 
-namespace Eirshy.PB.PressXToJson.InstructionProcessing {
+namespace Eirshy.PB.PressXToJson.DataProcessing {
     internal class PathedInstructionProcessor {
         /// <summary>
         /// Throws in the event the instruction fails.

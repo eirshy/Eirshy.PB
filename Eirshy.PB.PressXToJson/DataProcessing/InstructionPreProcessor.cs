@@ -13,7 +13,7 @@ using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Enums;
 using Eirshy.PB.PressXToJson.Exceptions;
 
-namespace Eirshy.PB.PressXToJson.InstructionProcessing {
+namespace Eirshy.PB.PressXToJson.DataProcessing {
     internal class InstructionPreProcessor {
         readonly Regex _autoType = new Regex(@"^((?:\w+\.)*)(\w+)(?:$|[\s,]+([\w.-]*)$)");
 
@@ -51,6 +51,7 @@ namespace Eirshy.PB.PressXToJson.InstructionProcessing {
 
                 //Object commands
                 case Command.New:
+                case Command.Overwrite:
                 case Command.Merge:
                     CommandDataTypeException.ThrowIfMismatch(ins.Command, dataType, JTokenType.Object);
                     break;

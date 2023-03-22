@@ -13,7 +13,7 @@ using PhantomBrigade.Data;
 
 using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Config;
-using Eirshy.PB.PressXToJson.InstructionProcessing;
+using Eirshy.PB.PressXToJson.DataProcessing;
 
 namespace Eirshy.PB.PressXToJson.Managers {
     internal static class JsonModLoader {
@@ -97,7 +97,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
                 .AsParallel()
                 .Select((path, pi) => {
                     var shortpath = path.Replace('\\', '/').Replace(pathConfigEdits, "");
-                    var splitpath = shortpath.Split('/').SkipLast();
+                    var shortDir = Path.GetDirectoryName(shortpath).Replace('\\', '/');
 
                     InstructionsFile file;
                     try {
@@ -107,7 +107,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
                         file = new InstructionsFile() {
                             PhysicalSource = path,
                             Owner = mod,
-                            SourceRoute = string.Join("/", splitpath),
+                            SourceRoute = shortDir,
                             SourceFile = Path.GetFileNameWithoutExtension(path),
                             Ins = Array.Empty<Instruction>(),
                         };
@@ -120,7 +120,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
                         file.FileLoadOrder = pi++;
                         file.Owner = mod;
                         file.PhysicalSource = path;
-                        file.SourceRoute = string.Join("/", splitpath);
+                        file.SourceRoute = shortDir;
                         file.SourceFile = Path.GetFileNameWithoutExtension(path);
 
                         file.SourceFileType = _routefile2type(file.SourceRoute, file.SourceFile);
@@ -145,9 +145,11 @@ namespace Eirshy.PB.PressXToJson.Managers {
                             if(ins.AsFile is null) ins.TargetType = file.SourceFileType;
                             else {
                                 ins.TargetName = Path.GetFileNameWithoutExtension(ins.AsFile);
-                                var insSplittedPath = ins.AsFile.Replace("\\", "/").Split('/').SkipLast();
-                                ins.TargetRoute = string.Join("/", splitpath.Concat(insSplittedPath));
+                                var fromRoot = ins.AsFile.StartsWith("~/");
+                                var insDir = Path.GetDirectoryName(ins.AsFile).Replace('\\', '/');
+                                ins.TargetRoute = fromRoot ? insDir.Substring(2) : Path.Combine(shortDir, insDir);
                                 ins.TargetType = _routefile2type(ins.TargetRoute, ins.TargetName);
+                                if(fromRoot) ins.Log.Info($"Root Route got type {ins.TargetType} : {ins.TargetRoute}");
                             }
                             preproc.PreProcess(ins);
                         } catch(Exception ex) {

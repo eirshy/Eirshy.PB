@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace Eirshy.PB.PressXToJson {
     internal static class Extensions {
-        internal static IEnumerable<string> SkipLast(this string[] a) => a.Take(a.Length -1);
-
         internal static void ForEach<T>(this IEnumerable<T> iet, Action<T> action) {
             foreach(var t in iet) action(t);
         }

@@ -84,9 +84,9 @@
     <Compile Include="Exceptions\CommandException.cs" />
     <Compile Include="Exceptions\CommandTokenTypeException.cs" />
     <Compile Include="Exceptions\InstructionParseException.cs" />
-    <Compile Include="InstructionProcessing\DataLinkerCache.cs" />
-    <Compile Include="InstructionProcessing\InstructionPreProcessor.cs" />
-    <Compile Include="InstructionProcessing\PathedInstructionProcessor.cs" />
+    <Compile Include="DataProcessing\DataLinkerCache.cs" />
+    <Compile Include="DataProcessing\InstructionPreProcessor.cs" />
+    <Compile Include="DataProcessing\PathedInstructionProcessor.cs" />
     <Compile Include="Entities\Instruction.cs" />
     <Compile Include="Entities\InstructionsFile.cs" />
     <Compile Include="Enums\Command.cs" />
@@ -96,7 +96,7 @@
     <Compile Include="Fixes\Functions\Equipment\TrimSystemsByTagFilterPatches.cs" />
     <Compile Include="JsonExtensions.cs" />
     <Compile Include="Managers\JsonModApplier.cs" />
-    <Compile Include="InstructionProcessing\DataLinker.cs" />
+    <Compile Include="DataProcessing\DataLinker.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Managers\InitialLoadManager.cs" />
     <Compile Include="Managers\ReferenceFilesManager.cs" />

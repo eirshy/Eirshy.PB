@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
 
-namespace Eirshy.PB.PressXToJson.InstructionProcessing {
+namespace Eirshy.PB.PressXToJson.DataProcessing {
     internal class DataLinkerCache<T> {
         private SortedDictionary<string, T> _wrapped { get; }
         private Dictionary<string, JObject> _cache { get; }
