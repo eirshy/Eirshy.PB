@@ -9,7 +9,7 @@ namespace Eirshy.PB.PressXToJson.Enums {
         //order here is actual order
         Meta,
         RootCreate,
-        RootCreateFrom,
+        RootFrom,
         General,
         Error,
     }

@@ -9,6 +9,19 @@ using Eirshy.PB.PressXToJson.Exceptions;
 
 namespace Eirshy.PB.PressXToJson.DataProcessing {
     internal class PathedInstructionProcessor {
+        static readonly JsonMergeSettings _concatWriteNull = new JsonMergeSettings(){
+            MergeArrayHandling = MergeArrayHandling.Concat,
+            MergeNullValueHandling = MergeNullValueHandling.Merge,
+        };
+        static readonly JsonMergeSettings _unionWriteNull = new JsonMergeSettings(){
+            MergeArrayHandling = MergeArrayHandling.Union,
+            MergeNullValueHandling = MergeNullValueHandling.Merge,
+        };
+        static readonly JsonMergeSettings _replaceWriteNull = new JsonMergeSettings(){
+            MergeArrayHandling = MergeArrayHandling.Replace,
+            MergeNullValueHandling = MergeNullValueHandling.Merge,
+        };
+
         /// <summary>
         /// Throws in the event the instruction fails.
         /// </summary>
@@ -18,6 +31,7 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
 
             //JPath-ful commands
             var tokens = target.SelectTokens(ins.Target).ToList();
+            var mergeType = _concatWriteNull;
             foreach(var tok in tokens) {
                 var toka = tok as JArray;
                 var toko = tok as JObject;
@@ -27,7 +41,10 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
 
                     case Command.Replace:
                         if(tok.Type != JTokenType.Null) {
-                            CommandTargetTypeException.ThrowIfMismatch(ins.Command, ins.Data.Type, tok.Type);
+                            CommandTargetTypeException.ThrowIfMismatch(
+                                ins.Command, ins.Data.Type, tok.Type, 
+                                allowNumber: true
+                            );
                         }
                         tok.Replace(ins.Data);
                         break;
@@ -53,12 +70,12 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                     #endregion
 
                     //Array-Typed ... ... ... ... ... ... ... ... ...
-                    #region Concat .. ... ... ... ... ... ... ... ...
+                    #region Concat & Union .. ... ... ... ... ... ...
 
                     case Command.Concat:
                         switch(tok.Type) {
                             case JTokenType.Array:
-                                foreach(var ele in ins.DataArr) toka.Add(ele);
+                                toka.Merge(ins.Data, mergeType);
                                 break;
                             case JTokenType.Null:
                                 tok.Replace(ins.Data);
@@ -67,32 +84,42 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                                 throw new CommandTargetTypeException(ins.Command, JTokenType.Array, tok.Type);
                         }
                         break;
+                    case Command.ConcatNew:
+                        mergeType = _unionWriteNull;
+                        goto case Command.Concat;
 
                     #endregion
                     #region SpreadAfter & SpreadBefore .. ... ... ...
 
-                    case Command.SpreadAfter:
-                        CommandTargetTypeException.ThrowIfMismatch(ins.Command, JTokenType.Array, tok.Parent.Parent.Type, true);
+                    case Command.SpreadPost:
+                        CommandTargetTypeException.ThrowIfMismatch(
+                            ins.Command, JTokenType.Array, tok.Parent.Parent.Type, 
+                            isParent: true
+                        );
                         foreach(var ele in ins.DataArr.Reverse()) {
-                            tok.Parent.AddAfterSelf(ele);
+                            tok.AddAfterSelf(ele);
                         }
                         break;
-                    case Command.SpreadBefore:
-                        CommandTargetTypeException.ThrowIfMismatch(ins.Command, JTokenType.Array, tok.Parent.Parent.Type, true);
+                    case Command.SpreadPre:
+                        CommandTargetTypeException.ThrowIfMismatch(
+                            ins.Command, JTokenType.Array, tok.Parent.Parent.Type, 
+                            isParent: true
+                        );
                         foreach(var ele in ins.DataArr) {
-                            tok.Parent.AddBeforeSelf(ele);
+                            tok.AddBeforeSelf(ele);
                         }
                         break;
 
                     #endregion
+                    
 
                     //Object-Typed .. ... ... ... ... ... ... ... ...
-                    #region Merge ... ... ... ... ... ... ... ... ...
+                    #region The Almighty Merge .. ... ... ... ... ...
 
                     case Command.Merge:
                         switch(tok.Type) {
                             case JTokenType.Object:
-                                toko.Merge(ins.Data);//maybe?
+                                toko.Merge(ins.Data, mergeType);
                                 break;
                             case JTokenType.Null:
                                 tok.Replace(ins.Data);
@@ -101,6 +128,12 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                                 throw new CommandTargetTypeException(ins.Command, JTokenType.Object, tok.Type);
                         }
                         break;
+                    case Command.MergePatch:
+                        mergeType = _unionWriteNull;
+                        goto case Command.Merge;
+                    case Command.MergeHard:
+                        mergeType = _replaceWriteNull;
+                        goto case Command.Merge;
 
                         #endregion
                 }

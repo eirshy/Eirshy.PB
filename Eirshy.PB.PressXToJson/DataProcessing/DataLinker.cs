@@ -108,13 +108,13 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                 //String-Typed .. ... ... ... ... ... ... ... ...
                 #region PriorityCopy & Copy . ... ... ... ... ...
 
-                case Command.PriorityCopy:
+                case Command.CopyBase:
                 case Command.Copy: {
                     if(cache is null) {//safety; should have bailed already on file loading.
                         throw new CommandTargetTypeException(ins.Command, typeof(DataContainerUnique));
                     } else if(cache.TryGetValue(ins.DataStr, out var copyFrom)) {
                         if(target != null) ins.Log.DidOverwrite(ins);
-                        return copyFrom.ToJObject();
+                        return (JObject)copyFrom.DeepClone();
                     } else throw new CommandException(ins.Command, $"Target {ins.DataStr} Not Found");
                 }
 

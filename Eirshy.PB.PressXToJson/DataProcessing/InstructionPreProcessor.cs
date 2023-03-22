@@ -30,6 +30,7 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
 
                 //Instruction translators
                 if(dataType == JTokenType.Array || dataType == JTokenType.Object) {
+                    //arrays can contain objects lol
                     TranslateAutoType(ins);
                 }
             } catch(Exception ex) {
@@ -53,13 +54,16 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                 case Command.New:
                 case Command.Overwrite:
                 case Command.Merge:
+                case Command.MergeHard:
+                case Command.MergePatch:
                     CommandDataTypeException.ThrowIfMismatch(ins.Command, dataType, JTokenType.Object);
                     break;
 
                 //Array commands
                 case Command.Concat:
-                case Command.SpreadBefore:
-                case Command.SpreadAfter:
+                case Command.ConcatNew:
+                case Command.SpreadPre:
+                case Command.SpreadPost:
                     CommandDataTypeException.ThrowIfMismatch(ins.Command, dataType, JTokenType.Array);
                     break;
 
@@ -70,7 +74,7 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                 case Command.Remove:  break;
 
                 //String commands
-                case Command.PriorityCopy:
+                case Command.CopyBase:
                 case Command.Copy:
                     CommandDataTypeException.ThrowIfMismatch(ins.Command, dataType, JTokenType.String);
                     CommandTargetTypeException.ThrowIfAssignalbe(ins.Command, typeof(DataContainerUnique), ins.TargetType);

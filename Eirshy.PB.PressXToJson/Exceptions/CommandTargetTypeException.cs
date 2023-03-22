@@ -19,8 +19,18 @@ namespace Eirshy.PB.PressXToJson.Exceptions {
         public CommandTargetTypeException(Command cmd, Type disallow) : base(cmd, _write(disallow)) { }
 
 
-        public static void ThrowIfMismatch(Command cmd, JTokenType expected, JTokenType got, bool isParent = false) {
-            if(expected != got) throw new CommandTargetTypeException(cmd, expected, got, isParent);
+        public static void ThrowIfMismatch(Command cmd, JTokenType expected, JTokenType got, bool isParent = false, bool allowNumber = false) {
+            if(expected != got) {
+                if(allowNumber) {
+                    if(false
+                        || expected == JTokenType.Float && got == JTokenType.Integer
+                        || expected == JTokenType.Integer && got == JTokenType.Float
+                    ) {
+                        return;//OK!
+                    }
+                }
+                throw new CommandTargetTypeException(cmd, expected, got, isParent);
+            }
         }
         private static string _write(JTokenType expected, JTokenType got, bool isParent) {
             if(isParent) {

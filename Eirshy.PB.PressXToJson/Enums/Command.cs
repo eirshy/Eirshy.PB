@@ -43,7 +43,7 @@ namespace Eirshy.PB.PressXToJson.Enums {
         /// <br />Clones another type with the given name. Fails on Unique data types.
         /// <br /><c>configs[FileName](configs[Data]);</c>
         /// </summary>
-        PriorityCopy,
+        CopyBase,
 
         /// <summary>
         /// PATH TARGET: Ignored
@@ -54,7 +54,7 @@ namespace Eirshy.PB.PressXToJson.Enums {
         Copy,
 
         #endregion
-        #region Modify  ... ... ... ...
+        #region Basic . ... ... ... ...
 
         /// <summary>
         /// PATH TARGET: Any
@@ -70,6 +70,10 @@ namespace Eirshy.PB.PressXToJson.Enums {
         /// <br /><c>target = Data;</c>
         /// </summary>
         Replace,
+
+        #endregion
+        #region Array . ... ... ... ...
+
         /// <summary>
         /// PATH TARGET: Lists
         /// <br />DATA TYPE: As Target
@@ -78,29 +82,55 @@ namespace Eirshy.PB.PressXToJson.Enums {
         /// </summary>
         Concat,
         /// <summary>
+        /// PATH TARGET: Lists
+        /// <br />DATA TYPE: As Target
+        /// <br />Appends all elements in Data to all targets where the target lacks the given element.
+        /// <br />This *does* compare properties on the object, looking for an exact match.
+        /// <br /><c>//complicated</c>
+        /// </summary>
+        ConcatNew,
+
+        /// <summary>
         /// PATH TARGET: Element(s) in List(s)
         /// <br />DATA TYPE: As Containing List
         /// <br />Inserts all elements in Data before all targets
         /// <br /><c>parent = [...earlierSiblings, ...Data, target, ...laterSiblings];</c>
         /// </summary>
-        SpreadBefore,
+        SpreadPre,
         /// <summary>
         /// PATH TARGET: Element(s) in List(s)
         /// <br />DATA TYPE: As Containing List
         /// <br />Inserts all elements in Data after all targets
         /// <br /><c>parent = [...earlierSiblings, target, ...Data, ...laterSiblings];</c>
         /// </summary>
-        SpreadAfter,
+        SpreadPost,
+
+        #endregion
+        #region The Almighty Merge  ...
+
         /// <summary>
         /// PATH TARGET: Objects
         /// <br />DATA TYPE: As Matching
-        /// <br />Merges all keys into the targets, replacing pre-existing keys.
-        /// <br /><c>target = {...target, ...Data};</c>
+        /// <br />Merges all keys into the targets, recursively. Array keys are handled like Concat.
+        /// <br /><c>target = {...target, ...Data};//but deeper</c>
         /// </summary>
         Merge,
+        /// <summary>
+        /// PATH TARGET: Objects
+        /// <br />DATA TYPE: As Matching
+        /// <br />Merges all keys into the targets, recursively. Array keys are handled like ConcatNew.
+        /// <br /><c>target = {...target, ...Data};//but deeper</c>
+        /// </summary>
+        MergePatch,
+        /// <summary>
+        /// PATH TARGET: Objects
+        /// <br />DATA TYPE: As Matching
+        /// <br />Merges all keys into the targets, recursively. Array keys are handled like Replace.
+        /// <br /><c>target = {...target, ...Data};//but deeper</c>
+        /// </summary>
+        MergeHard,
 
         #endregion
-
         //dots. ... ... ... ... ... ...
     }
 
@@ -116,8 +146,8 @@ namespace Eirshy.PB.PressXToJson.Enums {
                 case Command.New:
                     return CommandPriority.RootCreate;
 
-                case Command.PriorityCopy:
-                    return CommandPriority.RootCreateFrom;
+                case Command.CopyBase:
+                    return CommandPriority.RootFrom;
 
                 case Command.Unknown:
                     return CommandPriority.Error;

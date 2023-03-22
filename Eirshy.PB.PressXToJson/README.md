@@ -19,7 +19,6 @@ As you might guess, this adds a JSON-based version of
 
 ## What are we waiting on?
 * Convert all my current "could be published" for examples
-* Basic reference docs for Commands
 * Basic reference docs for Instruction/InstructionFile Schemas
 
 ## What the Future Holds?
