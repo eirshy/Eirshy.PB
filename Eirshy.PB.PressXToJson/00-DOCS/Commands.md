@@ -34,36 +34,6 @@ Commands have their own Priority (considered before instruction, file, or even m
 |`@TYPE`| "Auto-Types" the underlying type of an object, using the context to guess both the namespace and the assembly if they aren't provided. <br />**Format**: `"Namespace.TypeName, Assembly"` <br /> **Ex:** `"AddHardpoints"`
 
 ## Standard Commands
-<style type="text/css">
-#standard-commands + style + table tbody
-tr:is(:nth-child(1),:nth-child(3),:nth-child(5))
-{
-    vertical-align: top;
-}
-#standard-commands + style + table tbody
-tr:is(:nth-child(1),:nth-child(3),:nth-child(5))
-td{
-    padding: 0 0;
-    font-size: 18px;
-    border-left: unset;
-    border-right: unset;
-    
-}
-#standard-commands + style + table tbody
-tr:is(:nth-child(1),:nth-child(3),:nth-child(5))
-mark{
-    display: block;
-}
-#standard-commands + style + table thead,
-#standard-commands + style + table tbody tr:last-child{
-    font-size: 13px;
-    font-style: italic;
-    font-weight: 600;
-}
-#standard-commands + style + table tbody tr:last-child td:first-child{
-    text-align: center;
-}
-</style>
 |Command|Data|Target|Description|
 |-:|:-:|:-:|:-|
 |<mark>RootCreate</mark>|<mark>&nbsp;</mark>|<mark>&nbsp;</mark>|<mark>&nbsp;</mark>
