@@ -4,7 +4,7 @@
  nothing about the game itself- it merely provides a more
  powerful language for mod authors to use.
 
-### Installation - BETA AVAILBALBE -- v0.5a
+### Installation - BETA AVAILBALBE
 Simply snag the latest in the 00-RELEASE folder, and extract it and
  enable it like any other mod.
  As we have to hook a number of mod-loading actions, you should
