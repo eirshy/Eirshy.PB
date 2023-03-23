@@ -17,8 +17,14 @@ As you might guess, this adds a JSON-based version of
  utilizing a number of additional features one might want for
  ease of development or compatibility.
 
+### Documentation Where!
+Mostly my head, but I've moved some of it to markdown files in the
+ `00-DOCS` directory. I'll (probably) eventually move it to the
+ snazzy "wiki" feature that Github provides, but for now that's all
+ there is.
+
 ## What are we waiting on?
-* Convert all my current "could be published" for examples
+* Convert all my current "could be published" to be examples
 * Basic reference docs for Instruction/InstructionFile Schemas
 
 ## What the Future Holds?
