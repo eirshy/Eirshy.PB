@@ -10,7 +10,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
 
         #region Owner & Physical Source
 
-        internal ModSettings Owner { get; set; }
+        internal ModData Owner { get; set; }
         internal string PhysicalSource { get; set; }
 
         #endregion

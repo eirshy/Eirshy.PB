@@ -17,11 +17,11 @@ using Eirshy.PB.PressXToJson.DataProcessing;
 namespace Eirshy.PB.PressXToJson.Managers {
     internal static class LoadingManager {
         private static Type THIS => typeof(LoadingManager);
-        static Dictionary<string, ModSettings> _allMods { get; } = new Dictionary<string, ModSettings>();
+        static Dictionary<string, ModData> _allMods { get; } = new Dictionary<string, ModData>();
         /// <summary>
         /// Keyed by Mod ID
         /// </summary>
-        public static IReadOnlyDictionary<string, ModSettings> AllJsonMods => _allMods;
+        public static IReadOnlyDictionary<string, ModData> AllJsonMods => _allMods;
         public static void LogAllErrors() => _allMods.Values.ForEach(mod => mod.LogAllErrors());
 
         public static void Init(Harmony harmony) {
@@ -77,7 +77,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
             if(!paths.Any()) return; //no JSON files for us to read, ignore the mod.
             
             var root = pathPrefix.Substring(0, pathPrefix.Substring(0, pathPrefix.Length-1).LastIndexOf('/')+1);
-            var mod = new ModSettings(loadedData, root);
+            var mod = new ModData(loadedData, root);
             mod.LoadSettingsFile();
             mod.LogSettings = PressXToJson.Config.Logs.Mods.TryGetValue(loadedData.metadata.id, out var le) ? le : LogsEntry.DEFAULT;
             _allMods.Add(loadedData.metadata.id, mod);

@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace Eirshy.PB.PressXToJson.Enums {
     internal enum LoggingLevel {
         None,
+        AsOrphan,
+
+        //order here is precedence order
         ErrorOnly,
         ErrorVerbose,
         Info,
         InfoVerbose,
-
-        AsOrphan,
     }
 
     internal static class LoggingLevelConfig {
@@ -27,7 +28,7 @@ namespace Eirshy.PB.PressXToJson.Enums {
                 [LoggingLevel.None.ToString()] = "No logging for this mod",
                 [LoggingLevel.ErrorOnly.ToString()] = "Simplified error messages will be logged.",
                 [LoggingLevel.ErrorVerbose.ToString()] = "Errors will include inner exception unrolls and some serialized objects.",
-                [LoggingLevel.Info.ToString()] = "Simplified Errors and Info messages will be logged.",
+                [LoggingLevel.Info.ToString()] = "Verbose Errors and Simplified Info messages will be logged.",
                 [LoggingLevel.InfoVerbose.ToString()] = "Errors and Info messages will be logged with round-trip serialization, etc.",
                 [LoggingLevel.AsOrphan.ToString()] = "Log level will be synchronized with the Orphanage setting",
 

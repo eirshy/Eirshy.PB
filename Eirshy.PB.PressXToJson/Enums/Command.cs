@@ -11,10 +11,7 @@ namespace Eirshy.PB.PressXToJson.Enums {
         Unknown,
         #region Macros  ... ... ... ...
 
-        MacroDefine,
         MacroExec,
-        MacroInline,
-        MacroVar,
 
         #endregion
         #region Create  ... ... ... ...
@@ -137,10 +134,7 @@ namespace Eirshy.PB.PressXToJson.Enums {
     internal static class CommandExtensions {
         public static CommandPriority ToPriority(this Command cmd) {
             switch(cmd) {
-                case Command.MacroDefine:
                 case Command.MacroExec:
-                case Command.MacroInline:
-                case Command.MacroVar:
                     return CommandPriority.Meta;
 
                 case Command.New:

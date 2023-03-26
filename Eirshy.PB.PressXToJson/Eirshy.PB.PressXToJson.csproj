@@ -75,7 +75,7 @@
     <Compile Include="Config\LogsEntry.cs" />
     <Compile Include="Config\RefOutput.cs" />
     <Compile Include="Entities\LocalizationEntry.cs" />
-    <Compile Include="Entities\ModSettings.cs" />
+    <Compile Include="Entities\ModData.cs" />
     <Compile Include="Entities\ModSettingsFile.cs" />
     <Compile Include="Enums\LoggingLevel.cs" />
     <Compile Include="Enums\LoggingCustody.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="Exceptions\CommandException.cs" />
     <Compile Include="Exceptions\CommandTokenTypeException.cs" />
     <Compile Include="Exceptions\InstructionParseException.cs" />
-    <Compile Include="DataProcessing\DataLinkerCache.cs" />
+    <Compile Include="DataProcessing\JObjectCache.cs" />
     <Compile Include="DataProcessing\InstructionPreProcessor.cs" />
     <Compile Include="DataProcessing\PathedInstructionProcessor.cs" />
     <Compile Include="Entities\Instruction.cs" />
@@ -110,8 +110,6 @@
     <None Include="metadata.yaml" />
     <None Include="README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Macros\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

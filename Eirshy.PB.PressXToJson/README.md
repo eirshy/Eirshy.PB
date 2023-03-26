@@ -32,16 +32,6 @@ Mostly my head, but I've moved some of it to markdown files in the
   * When init finishes, confirm all that we touch loaded
   * Guarantees syntax errors are found immediately
   * Can clean up all of our data right after as we done
-* Partial ownership of types for logging
-  * InfoVerbose dumping deserialized round-trips is useful
-  * With even just 2 json mods, not so much.
-  * Should try to detect which mods modified a given file
-    and log under that mod if it's only that one.
-  * Maybe also make Orphan look at all levels that modified
-    a file and take the most permissive if there's more than
-    one?
-* Adjust Copy to not trigger a serialization loop if the from
-    target isn't modified
 * Real reference docs
 * Proper schema definitions for our internals
 * Schema "generator" for game classes.

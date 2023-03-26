@@ -11,9 +11,9 @@ using PhantomBrigade.Data;
 using Eirshy.PB.PressXToJson.Config;
 
 namespace Eirshy.PB.PressXToJson.Entities {
-    internal class ModSettings : IComparable<ModSettings>, IDisposable {
+    internal class ModData : IComparable<ModData>, IEquatable<ModData>, IDisposable {
         static int _loadOrder = 0;
-        public ModSettings(ModLoadedData builtin, string rootLocation) {
+        public ModData(ModLoadedData builtin, string rootLocation) {
             ModLoadOrder = _loadOrder++;
             Builtin = builtin;
             RootLocation = rootLocation;
@@ -66,14 +66,18 @@ namespace Eirshy.PB.PressXToJson.Entities {
         ;
 
 
-        #region Interface implementation -- IComparable
+        #region Interface implementation -- IComparable, IEquatable, IDisposable
 
-        public int CompareTo(ModSettings other) {
+        public int CompareTo(ModData other) {
             var cmp = ModLoadOrder.CompareTo(other.ModLoadOrder);
             return cmp;
         }
 
-        #endregion
+        public bool Equals(ModData other) {
+            if(other is null) return false;
+            return ModLoadOrder == other.ModLoadOrder;
+        }
+        public override int GetHashCode() => ModLoadOrder.GetHashCode();
 
         /// <summary>
         /// Logs all errors and disposes the logger if it's not an Orphan one.
@@ -86,5 +90,8 @@ namespace Eirshy.PB.PressXToJson.Entities {
             }
             _log = null;
         }
+
+        #endregion
+
     }
 }

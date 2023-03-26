@@ -66,23 +66,21 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
         }
 
         public void Apply(List<Instruction> instructions, SortedDictionary<string, T> dataInternal) {
-            var cache = new DataLinkerCache<T>(dataInternal);
+            var cache = new JObjectCache<T>(dataInternal);
             Logger.Orphan.Info($"Applying {instructions.Count} ins to type {typeof(T).Name}");
             foreach(var ins in instructions) {
                 if(ins.Disabled) continue;
-                var target = cache[ins.TargetName];
+                var target = cache.Get(ins.TargetName, ins.Log);
                 try {
                     var updated = PathlessApply(ins, target, cache);
                     if(updated is null) updated = _pathed.Apply(ins, target);
-                    if(!Object.ReferenceEquals(updated, target)) {
-                        cache[ins.TargetName] = updated;
+                    if(!ReferenceEquals(updated, target)) {
+                        cache.Set(ins.TargetName, updated, ins.Log);
                     }
                 } catch(Exception ex) {
                     ins.AddError(ex);
                 }
             }
-            Logger.Orphan.Info($"Saving {cache.Cached().Count()} entries");
-
             cache.Save();
             Logger.FullFlush();
         }
@@ -90,7 +88,7 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
 
         /// <summary>Interprets New and Copy commands</summary>
         /// <param name="cache">If null, will be assumed unavailable.</param>
-        protected JObject PathlessApply(Instruction ins, JObject target, DataLinkerCache<T> cache) {
+        protected JObject PathlessApply(Instruction ins, JObject target, JObjectCache<T> cache) {
             switch(ins.Command) {
                 //Object-Typed .. ... ... ... ... ... ... ... ...
                 #region New & Overwrite . ... ... ... ... ... ...

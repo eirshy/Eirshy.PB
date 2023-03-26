@@ -7,7 +7,7 @@ using PhantomBrigade.Mods;
 using Eirshy.PB.PressXToJson.Enums;
 
 namespace Eirshy.PB.PressXToJson.Entities {
-    internal class InstructionsFile : IComparable<InstructionsFile> {
+    internal class InstructionsFile : IComparable<InstructionsFile>, IEquatable<InstructionsFile> {
         #region Readonly/Const Defaults -- NONE
         #endregion
 
@@ -39,7 +39,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
 
         #region Mod Owner, Load Orders, & physical source
 
-        internal ModSettings Owner { get; set; }
+        internal ModData Owner { get; set; }
         internal int FileLoadOrder { get; set; }
         internal string PhysicalSource { get; set; }
 
@@ -99,7 +99,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #region Shorthand Utilities -- NONE
         #endregion
 
-        #region Interface implementation -- IComparable
+        #region Interface implementation -- IComparable, IEquatable, IDisposable
 
         public int CompareTo(InstructionsFile other) {
             var cmp = Owner.CompareTo(other.Owner);
@@ -110,7 +110,16 @@ namespace Eirshy.PB.PressXToJson.Entities {
             return cmp;
         }
 
-        #endregion
+        public bool Equals(InstructionsFile other) {
+            if(other == null) return false;
+            return Owner.Equals(other.Owner)
+                && FileLoadOrder == other.FileLoadOrder
+            ;
+        }
+        public override int GetHashCode()
+            => Owner.GetHashCode()
+            ^ FileLoadOrder.GetHashCode()
+        ;
 
         /// <summary>
         /// Logs all errors and disposes the logger if it's a File logger
@@ -122,5 +131,8 @@ namespace Eirshy.PB.PressXToJson.Entities {
                 Log.Dispose();
             }
         }
+
+        #endregion
+
     }
 }

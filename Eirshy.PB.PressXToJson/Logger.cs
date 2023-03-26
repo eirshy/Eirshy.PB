@@ -19,68 +19,20 @@ namespace Eirshy.PB.PressXToJson {
     /// But there's not a lot of parallelization anyways so that's Probably Fine, and we're
     /// Thread Safe is all contexts we introduced.
     /// </remarks>
-    internal class Logger : IDisposable {
+    internal class Logger : IEquatable<Logger>, IDisposable {
         static string DEFAULT_FILE => Path.Combine(PressXToJson.DllRoot, LoggingCustodyConfig.FILENAME_Orphanage);
         static readonly ConcurrentDictionary<string, Logger> _adopted = new ConcurrentDictionary<string, Logger>();
 
+        #region Orphanage Management
 
-        public static Logger Orphan { get; private set; } = null;
         private static string _getOrphanKeyFor(LoggingLevel level) => $"_PRESS_X_LOG_ORPHAN__{level}";
 
-        public string Name { get; private set; }
-        public LoggingLevel Level { get; private set; }
-        public LoggingCustody Custody { get; private set; }
-        public bool Buffered => true;
-
-        private string _logFile = null;
-        public string LogFile => _logFile ?? Orphan?._logFile ?? DEFAULT_FILE;//safety, we coalesce to this.
-
-        bool _neverWrote = true;
-
-        public static Logger Register(ModSettings mod, InstructionsFile insf) {
-            var le = mod.LogSettings;
-            if(le.Level == LoggingLevel.AsOrphan && le.Custody == LoggingCustody.AsOrphan) {
-                return Orphan;//we are the orphan!
-            }
-            string file;
-            string name;
-            long maxSize = -1;//disables this rule
-            switch(le.Custody) {
-                case LoggingCustody.AsOrphan:
-                    name = _getOrphanKeyFor(le.Level);
-                    file = null;
-                    break;
-                case LoggingCustody.PerFile:
-                    if(insf is null) goto case LoggingCustody.ModRoot;
-                    name = insf.Name;
-                    file = insf.PhysicalSource + LoggingCustodyConfig.FILENAME_PerFileSuffix;
-                    maxSize = PressXToJson.Config.Logs.MaxKB_PerFileLog;
-                    break;
-                case LoggingCustody.ModRoot:
-                    name = mod.Name;
-                    file = Path.Combine(mod.RootLocation, LoggingCustodyConfig.FILENAME_ModRoot);
-                    maxSize = PressXToJson.Config.Logs.MaxKB_PerModLog;
-                    break;
-                default:
-                    Orphan.Error($"Mod {mod.Name} has an unknown log custody value: {le.Custody}");
-                    return Orphan;//orphaned ourselves lol
-            }
-            var fresh = new Logger{
-                _logFile = file,
-                Level = le.Level,
-                Custody = le.Custody,
-                Name = name,
-            };
-            var ret = _adopted.GetOrAdd(name, fresh);
-            if(ret == fresh && file != null) {
-                ret.EnforceFilesize(maxSize);
-            }
-            return ret;
-        }
         public static void StartOrphanage(LoggingLevel level) {
             if(Orphan != null) return;
             if(level == LoggingLevel.AsOrphan) level = LoggingLevelConfig.DEFAULT_ORPHAN;
             Orphan = new Logger() {
+                //nobody else can name themselves AsOrphan, since we resolve AsOrphan to its value.
+                Name = _getOrphanKeyFor(LoggingLevel.AsOrphan),
                 Level = level,
                 Custody = LoggingCustody.AsOrphan,
             };
@@ -105,7 +57,113 @@ namespace Eirshy.PB.PressXToJson {
             Orphan.Flush();
             Orphan._logFile = null;
         }
-        
+
+        #endregion
+        public static Logger Orphan { get; private set; } = null;
+        public static Logger Register(ModData mod, InstructionsFile insf) {
+            var le = mod.LogSettings;
+            //This is the default, so shortcut hard
+            if(le.Level == LoggingLevel.AsOrphan && le.Custody == LoggingCustody.AsOrphan) {
+                return Orphan;//just be an orphan!
+            }
+            var level = le.Level == LoggingLevel.AsOrphan ? Orphan.Level : le.Level;
+            string file;
+            string name;
+            long maxSize = -1;//disables this rule
+            switch(le.Custody) {
+                case LoggingCustody.AsOrphan:
+                    name = _getOrphanKeyFor(level);
+                    file = null;
+                    break;
+                case LoggingCustody.PerFile:
+                    if(insf is null) goto case LoggingCustody.ModRoot;
+                    name = insf.Name;
+                    file = insf.PhysicalSource + LoggingCustodyConfig.FILENAME_PerFileSuffix;
+                    maxSize = PressXToJson.Config.Logs.MaxKB_PerFileLog;
+                    break;
+                case LoggingCustody.ModRoot:
+                    name = mod.Name;
+                    file = Path.Combine(mod.RootLocation, LoggingCustodyConfig.FILENAME_ModRoot);
+                    maxSize = PressXToJson.Config.Logs.MaxKB_PerModLog;
+                    break;
+                default:
+                    Orphan.Error($"Mod {mod.Name} has an unknown log custody value: {le.Custody}");
+                    return Orphan;//orphaned ourselves lol
+            }
+            var fresh = new Logger{
+                _logFile = file,
+                Level = level,
+                Custody = le.Custody,
+                Name = name,
+            };
+            var ret = _adopted.GetOrAdd(name, fresh);
+            if(ret == fresh && file != null) {
+                ret.EnforceFilesize(maxSize);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Includes pushing error message logs out as well.
+        /// </summary>
+        /// <param name="force">If true, we'll ignore whether LoadStateManager says init is done.</param>
+        /// <param name="alsoDeregister">If true we'll also dregister all non-Orphan loggers. Don't normally do this. Thread-unsafe.</param>
+        public static void FullFlush(bool force = false, bool alsoDeregister = false) {
+            if(!force && !Managers.LoadStateManager.IsInitFinished) return;
+            Managers.LoadingManager.LogAllErrors();
+            var adopted = _adopted.Values.ToList();
+            if(alsoDeregister) _adopted.Clear();
+            foreach(var l in adopted) {
+                try {
+                    l.Flush();
+                } catch(Exception ex) {
+                    Orphan.Error($"Flush error on Logger {l.Name}", ex);
+                }
+            }
+            Orphan.Flush();
+        }
+
+        #region Logger Settings & Internal Tracking
+
+        public string Name { get; private set; }
+        public LoggingLevel Level { get; private set; }
+        public LoggingCustody Custody { get; private set; }
+        public bool Buffered => true;
+
+        string _logFile = null;
+        public string LogFile => _logFile ?? Orphan?._logFile ?? DEFAULT_FILE;//safety, we coalesce to this.
+        public bool IsOrphanage => ReferenceEquals(this, Orphan);
+        public bool IsOrphanAlt => _logFile == null;
+        public bool LogsToOrphanage => Custody == LoggingCustody.AsOrphan;
+
+        bool _neverWrote = true;
+
+        #endregion
+        #region File Size stuff
+
+        public long GetFileSizeKB() {
+            if(!File.Exists(LogFile)) return 0;
+            try {
+                return (new FileInfo(LogFile)).Length >> 10;
+            } catch {
+                return 0;
+            }
+        }
+        public void ClearFile() {
+            if(File.Exists(LogFile)) {
+                File.WriteAllText(LogFile, "");
+            }
+        }
+        public void EnforceFilesize(long maxSize_KB) {
+            if(maxSize_KB > 0) {
+                if(GetFileSizeKB() > maxSize_KB) ClearFile();
+            } else if(maxSize_KB == 0) {
+                ClearFile();
+            }
+        }
+
+        #endregion
+        #region Base logging
 
         readonly Lazy<ConcurrentQueue<string>> _msg = new Lazy<ConcurrentQueue<string>>(
             ()=>new ConcurrentQueue<string>(), LazyThreadSafetyMode.PublicationOnly
@@ -134,58 +192,17 @@ namespace Eirshy.PB.PressXToJson {
             }// else { noop }
         }
 
-        public long GetFileSizeKB() {
-            if(!File.Exists(LogFile)) return 0;
-            try {
-                return (new FileInfo(LogFile)).Length >> 10;
-            } catch {
-                return 0;
-            }
-        }
-        public void ClearFile() {
-            if(File.Exists(LogFile)) {
-                File.WriteAllText(LogFile, "");
-            }
-        }
-        public void EnforceFilesize(long maxSize_KB) {
-            if(maxSize_KB > 0) {
-                if(GetFileSizeKB() > maxSize_KB) ClearFile();
-            } else if(maxSize_KB == 0) {
-                ClearFile();
-            }
-        }
-
-
-        /// <summary>
-        /// Includes pushing error message logs out as well.
-        /// </summary>
-        /// <param name="force">If true, we'll ignore whether LoadStateManager says init is done.</param>
-        /// <param name="alsoDeregister">If true we'll also dregister all non-Orphan loggers. Don't normally do this. Thread-unsafe.</param>
-        public static void FullFlush(bool force = false, bool alsoDeregister = false) {
-            if(!force && !Managers.LoadStateManager.IsInitFinished) return;
-            Managers.LoadingManager.LogAllErrors();
-            var adopted = _adopted.Values.ToList();
-            if(alsoDeregister) _adopted.Clear();
-            foreach(var l in adopted) {
-                try {
-                    l.Flush();
-                } catch(Exception ex) {
-                    Orphan.Error($"Flush error on Logger {l.Name}", ex);
-                }
-            }
-            Orphan.Flush();
-        }
 
         public void Error(string message, Exception ex = null) {
             switch(Level) {
                 case LoggingLevel.ErrorOnly:
-                case LoggingLevel.Info:
                     if(ex != null) {
                         _log($"{message} -- {ex.GetType().Name} :: {ex?.Message ?? ""}");
                     } else _log(message);
                     break;
 
                 case LoggingLevel.ErrorVerbose:
+                case LoggingLevel.Info:
                 case LoggingLevel.InfoVerbose:
                     if(ex != null) {
                         var msg = $"{message} -- {ex.GetType().Name} :: {ex?.Message ?? ""}";
@@ -206,7 +223,10 @@ namespace Eirshy.PB.PressXToJson {
                     break;
             }
         }
-        public void InfoVerboseDeserialize(string message, object jsonifyOnVerbose) {
+        /// <summary>
+        /// Will only serialize on Verbose
+        /// </summary>
+        public void Info(string message, object jsonifyOnVerbose) {
             switch(Level) {
                 case LoggingLevel.Info:
                     _log(message);
@@ -217,7 +237,8 @@ namespace Eirshy.PB.PressXToJson {
             }
         }
 
-
+        #endregion
+        #region Specialized Logging
 
         public void HookError(string context, Exception ex = null) => Error($"Hook failed -- {context}", ex);
         public void ConfigLoadError(Exception ex) => Error("Error loading Config File", ex);
@@ -242,20 +263,18 @@ namespace Eirshy.PB.PressXToJson {
 
         public void DeserializeError(string name, Type target, JObject jobj, Exception ex) {
             switch(Level) {
+                case LoggingLevel.ErrorOnly:
+                    Error($"Failed deserialize of {name} @ {target.Name}");
+                    break;
                 case LoggingLevel.ErrorVerbose:
+                case LoggingLevel.Info:
+                case LoggingLevel.InfoVerbose:
                     try {
                         Error($"Failed deserialize of {name} @ {target.Name} from {jobj.ToRawJson()}", ex);
                     } catch(Exception ex2) {
                         Error($"Failed verbose serialize of {name} @ {target.Name}", ex2);
-                        goto case LoggingLevel.Info;//
+                        goto case LoggingLevel.ErrorOnly;
                     }
-                    break;
-                case LoggingLevel.Info:
-                    Error($"{target.Name} @ {name} -- Failed Deserialize", ex);
-                    break;
-                case LoggingLevel.InfoVerbose:
-                    //info already logged jobj
-                    Error($"{target.Name} @ {name} -- Failed Deserialize", ex);
                     break;
             }
         }
@@ -270,6 +289,12 @@ namespace Eirshy.PB.PressXToJson {
             }
         }
 
+        #endregion
+
+        #region Interface implementation -- IEquatable, IDisposable
+
+        public bool Equals(Logger other) => Name == other?.Name;
+        public override int GetHashCode() => Name.GetHashCode();
 
         public void Dispose() {
             if(_adopted.TryGetValue(Name, out var named) && named == this) {
@@ -280,7 +305,10 @@ namespace Eirshy.PB.PressXToJson {
                     }
                 }
             }
-            try { Flush(); } catch { }
+            try { Flush(); } 
+            catch { } //who would we even tell lol
         }
+
+        #endregion
     }
 }

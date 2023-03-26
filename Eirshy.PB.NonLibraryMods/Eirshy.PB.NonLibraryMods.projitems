@@ -17,9 +17,10 @@
     <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\defuse-as-parents.json" />
     <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\part-parent.json" />
     <Content Include="$(MSBuildThisFileDirectory)eirshy-defused\ConfigEdits\perks-editable.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-phantomphase-quickshields\ConfigEdits\PhantomPhase.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-phantomphase-quickshields\ConfigEdits\S1-StormsEye.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-phantomphase-quickshields\ConfigEdits\S2-Stormscale.json" />
+    <Content Include="$(MSBuildThisFileDirectory)eirshy-phantomphase-quickshields\ConfigEdits\S4-Windscale.json" />
     <Content Include="$(MSBuildThisFileDirectory)eirshy-shieldfix\ConfigEdits\shield-rebalance.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)eirshy-phantomphase-quickshields\ConfigEdits\" />
   </ItemGroup>
 </Project>

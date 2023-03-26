@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 using Eirshy.PB.PressXToJson.Enums;
 
 namespace Eirshy.PB.PressXToJson.Entities {
-    internal class Instruction : IComparable<Instruction> {
+    internal class Instruction : IComparable<Instruction>, IEquatable<Instruction> {
         #region Readonly/Const Defaults
 
         static readonly string DEFAULT_CompositeNamespace =
@@ -133,7 +133,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
 
         #endregion
 
-        #region Interface implementation -- IComparable
+        #region Interface implementation -- IComparable, IEquatable
 
         public int CompareTo(Instruction other) {
             var cmp = Command.ComparePriority(other.Command);
@@ -142,7 +142,18 @@ namespace Eirshy.PB.PressXToJson.Entities {
                 return Owner.CompareTo(other.Owner);
             } else return SourceIndex.CompareTo(other.SourceIndex);
         }
-        
+
+        public bool Equals(Instruction other) {
+            if(other is null) return false;
+            return Owner.Equals(other.Owner)
+                && SourceIndex == other.SourceIndex
+            ;
+        }
+        public override int GetHashCode()
+            => Owner.GetHashCode()
+            ^ SourceIndex.GetHashCode()
+        ;
+
         #endregion
     }
 }
