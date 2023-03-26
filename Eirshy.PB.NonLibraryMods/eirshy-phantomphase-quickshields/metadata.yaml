@@ -1,0 +1,18 @@
+id: eirshy-phantomphase-quickshields
+ver: 1.0
+includesConfigOverrides: false
+includesConfigEdits: true
+includesLibraries: false
+includesTextures: false
+includesLocalizationEdits: false
+includesLocalizations: false
+gameVersionMin: 1.0.2
+gameVersionMax: 
+name: 'Phantom Phase - Quick Shields'
+desc: |
+  !!! Requires Eirshy.PB.PressXToJson !!!
+  Adds the QuickShields S1* Storm's Eye, S2* Stormscale, S4* Windscale as additional equipment.
+  Balance is similar to that of Vanilla
+  --
+  A concept by Phantom Phase under contract by Knight House Pipkin, the 'QuickShield' operates similar to a standard Shield, but with a drastically reduced active interval- 0.6s instead of the industry standard 1.7s.
+  The majority of pilots find the increase reduces their performance, as they most often triple-queue the action for a net loss 0.1s... However, a stalwart few claim the higher resolution has allowed them a significant advantage when outnumbered, warranting the slim costs.

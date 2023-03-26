@@ -1,0 +1,28 @@
+{
+  "Text":{
+    "equipment_groups": {
+      "part_mnf_eirshy_phantomphase": {
+        "English": {
+          "Name": "Phantom Phase",
+          "Desc": "A boutique design firm from a distant land, favored heavily by Knight House Pipkin."
+        }
+      }
+    }
+  },
+  "Ins": [
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Groups/part_mnf_eirshy_phantomphase",
+      "Command": "New",
+      "Data": {
+        "priority": 30,
+        "type": "manufacturer",
+        "icon": "s_icon_l32_mnf_stealth2",
+        "visibleAsPerk": true,
+        "parts": true,
+        "tagsSubsystem": {
+          "mnf_eirshy_phantomphase": true,
+        },
+      },
+    },
+  ]
+}

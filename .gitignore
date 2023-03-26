@@ -364,3 +364,8 @@ FodyWeavers.xsd
 
 # game file references 
 refs/
+
+
+# currently hidden mods
+eirshy-haretrigger-mechs/
+eirshy-phantomphase-hybridrails/

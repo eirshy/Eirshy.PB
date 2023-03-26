@@ -1,0 +1,67 @@
+{
+  "Text":{
+    "equipment_part_presets": {
+      "wpn_shield_eirshy_stormscale": {
+        "English": {
+          "Name": "S2Q Stormscale",
+          "Desc": "An enhanced midweight shield with a significantly shortened reaction cycle."
+        }
+      }
+    }
+  },
+  "Ins": [
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Part_Presets/wpn_shield_eirshy_stormscale",
+      "Command": "Copy",
+      "Data": "wpn_shield_02",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Part_Presets/wpn_shield_eirshy_stormscale",
+      "Command": "Replace",
+      "Target": "$.genSteps",
+      "Data": [
+        {
+          "@TYPE": "AddHardpoints",
+          "subsystemsInitial": [
+            "wpn_main_shield_eirshy_stormscale"
+          ],
+          "pickRandom": false,
+          "hardpointsTargeted": [
+            "internal_main_equipment"
+          ],
+          "priority": 0,
+        }
+      ],
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Subsystems/wpn_main_shield_eirshy_stormscale",
+      "Command": "Copy",
+      "Data": "wpn_main_shield_02",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Subsystems/wpn_main_shield_eirshy_stormscale",
+      "Command": "MergeHard",
+      "Target": "$",
+      "Data": {
+        "tags":["mnf_eirshy_phantomphase"],
+        "stats":{
+          "act_duration": { "value": 0.6 },
+          "barrier": { "value": 140 },
+          "hp": { "value": 280 },
+          "mass": { "value": 6.5 },
+        },
+      },
+    },
+    {
+      "AsFile": "~/DataDecomposed/Workshop/Projects/prt_item_shield_eirshy_stormscale",
+      "Command": "Copy",
+      "Data": "prt_item_shield_02",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Workshop/Projects/prt_item_shield_eirshy_stormscale",
+      "Command": "Replace",
+      "Target": "..[?(@.key == 'wpn_shield_02')].key",
+      "Data": "wpn_shield_eirshy_stormscale",
+    }
+  ],
+}

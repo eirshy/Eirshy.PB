@@ -1,0 +1,67 @@
+{
+  "Text":{
+    "equipment_part_presets": {
+      "wpn_shield_eirshy_stormseye": {
+        "English": {
+          "Name": "S1Q Storm's Eye",
+          "Desc": "An enhanced heavyweight shield with a significantly shortened reaction cycle."
+        }
+      }
+    }
+  },
+  "Ins": [
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Part_Presets/wpn_shield_eirshy_stormseye",
+      "Command": "Copy",
+      "Data": "wpn_shield_01",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Part_Presets/wpn_shield_eirshy_stormseye",
+      "Command": "Replace",
+      "Target": "$.genSteps",
+      "Data": [
+        {
+          "@TYPE": "AddHardpoints",
+          "subsystemsInitial": [
+            "wpn_main_shield_eirshy_stormseye"
+          ],
+          "pickRandom": false,
+          "hardpointsTargeted": [
+            "internal_main_equipment"
+          ],
+          "priority": 0,
+        }
+      ],
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Subsystems/wpn_main_shield_eirshy_stormseye",
+      "Command": "Copy",
+      "Data": "wpn_main_shield_01",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Subsystems/wpn_main_shield_eirshy_stormseye",
+      "Command": "MergeHard",
+      "Target": "$",
+      "Data": {
+        "tags":["mnf_eirshy_phantomphase"],
+        "stats":{
+          "act_duration": { "value": 0.6 },
+          "barrier": { "value": 115 },
+          "hp": { "value": 500 },
+          "mass": { "value": 9.5 },
+        },
+      },
+    },
+    {
+      "AsFile": "~/DataDecomposed/Workshop/Projects/prt_item_shield_eirshy_stormseye",
+      "Command": "Copy",
+      "Data": "prt_item_shield_01",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Workshop/Projects/prt_item_shield_eirshy_stormseye",
+      "Command": "Replace",
+      "Target": "..[?(@.key == 'wpn_shield_01')].key",
+      "Data": "wpn_shield_eirshy_stormseye",
+    }
+  ],
+}

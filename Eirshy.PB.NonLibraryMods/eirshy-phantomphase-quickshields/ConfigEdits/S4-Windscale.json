@@ -1,0 +1,67 @@
+{
+  "Text":{
+    "equipment_part_presets": {
+      "wpn_shield_eirshy_windscale": {
+        "English": {
+          "Name": "S4Q Windscale",
+          "Desc": "An enhanced lightweight shield with a significantly shortened reaction cycle."
+        }
+      }
+    }
+  },
+  "Ins": [
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Part_Presets/wpn_shield_eirshy_windscale",
+      "Command": "Copy",
+      "Data": "wpn_shield_04",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Part_Presets/wpn_shield_eirshy_windscale",
+      "Command": "Replace",
+      "Target": "$.genSteps",
+      "Data": [
+        {
+          "@TYPE": "AddHardpoints",
+          "subsystemsInitial": [
+            "wpn_main_shield_eirshy_windscale"
+          ],
+          "pickRandom": false,
+          "hardpointsTargeted": [
+            "internal_main_equipment"
+          ],
+          "priority": 0,
+        }
+      ],
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Subsystems/wpn_main_shield_eirshy_windscale",
+      "Command": "Copy",
+      "Data": "wpn_main_shield_04",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Equipment/Subsystems/wpn_main_shield_eirshy_windscale",
+      "Command": "MergeHard",
+      "Target": "$",
+      "Data": {
+        "tags":["mnf_eirshy_phantomphase"],
+        "stats":{
+          "act_duration": { "value": 0.6 },
+          "barrier": { "value": 210 },
+          "hp": { "value": 15 },
+          "mass": { "value": 3.5 },
+        },
+      },
+    },
+    {
+      "AsFile": "~/DataDecomposed/Workshop/Projects/prt_item_shield_eirshy_windscale",
+      "Command": "Copy",
+      "Data": "prt_item_shield_04",
+    },
+    {
+      "AsFile": "~/DataDecomposed/Workshop/Projects/prt_item_shield_eirshy_windscale",
+      "Command": "Replace",
+      "Target": "..[?(@.key == 'wpn_shield_04')].key",
+      "Data": "wpn_shield_eirshy_windscale",
+    }
+  ],
+}
