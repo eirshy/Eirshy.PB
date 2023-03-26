@@ -39,10 +39,11 @@ namespace Eirshy.PB.PressXToJson {
             if(configLoadFailure != null) {
                 Logger.Orphan.Error("Error loading Config File", configLoadFailure);
             } else {
-                Managers.JsonModLoader.Init(harmony);
-                Managers.JsonModApplier.Init(harmony);
-                Managers.ReferenceFilesManager.Init(harmony);
                 Managers.LoadStateManager.Init(harmony);
+                Managers.LoadingManager.Init(harmony);
+                Managers.EditDataManager.Init(harmony);
+                Managers.EditLocalizationManager.Init(harmony);
+                Managers.ReferenceFilesManager.Init(harmony);
 
                 Fixes.FixesRollup.ApplyFixes(harmony);
             }

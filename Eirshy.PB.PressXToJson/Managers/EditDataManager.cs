@@ -13,8 +13,8 @@ using Eirshy.PB.PressXToJson.DataProcessing;
 using Eirshy.PB.PressXToJson.Entities;
 
 namespace Eirshy.PB.PressXToJson.Managers {
-    internal static class JsonModApplier {
-        private static Type THIS => typeof(JsonModApplier);
+    internal static class EditDataManager {
+        private static Type THIS => typeof(EditDataManager);
         private static Dictionary<Type, List<Instruction>> _typeMap = null;
 
         public static void Init(Harmony harmony) {
@@ -41,7 +41,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
                 _ = harmony.Patch(linker.mm, postfix: new HarmonyMethod(linker.post));
                 _ = harmony.Patch(multiLinker.mm, postfix: new HarmonyMethod(multiLinker.post));
             } catch(Exception ex) {
-                Logger.Orphan.HookError("Linker-Applies", ex);
+                Logger.Orphan.HookError("Edit Data", ex);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
         }
 
         internal static void LoadTypeInstructions() {
-            _typeMap = JsonModLoader.AllJsonMods
+            _typeMap = LoadingManager.AllJsonMods
                 .SelectMany(kvp => kvp.Value.Instructions)
                 .Where(ins => !ins.Disabled)
                 .GroupBy(key => key.TargetType)
@@ -70,7 +70,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
         /// </remarks>
         internal static void ForceFinalizeLoadedMods() {
             if(_typeMap is null) {
-                JsonModLoader.FinalizeLoadedMods();
+                LoadingManager.FinalizeLoadedMods();
             }
         }
 

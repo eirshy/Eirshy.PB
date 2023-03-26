@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Eirshy.PB.PressXToJson {
     internal static class Extensions {
+        internal static TValue GetOrNew<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key) where TValue : new() {
+            if(dict.TryGetValue(key, out TValue value)) return value;
+            value = new TValue();
+            dict[key] = value;
+            return value;
+        }
+
         internal static void ForEach<T>(this IEnumerable<T> iet, Action<T> action) {
             foreach(var t in iet) action(t);
         }

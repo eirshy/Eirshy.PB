@@ -50,8 +50,9 @@ namespace Eirshy.PB.PressXToJson.Managers {
             DataLinker.ClearLinkerCache();
             DataLinker.ClearProcessorCache();
 
-            JsonModLoader.Reset();
-            JsonModApplier.Reset();
+            LoadingManager.Reset();
+            EditDataManager.Reset();
+            EditLocalizationManager.Reset();
             ReferenceFilesManager.Reset();
 
             Logger.SellOrphanage();

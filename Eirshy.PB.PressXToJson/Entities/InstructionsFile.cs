@@ -11,15 +11,12 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #region Readonly/Const Defaults -- NONE
         #endregion
 
-        #region Basic Properties (Disabled, Opt, Ins, Priority)
+        #region Standard Edit Properties (Disabled, Priority, Ins, Text)
 
         /// <summary>
         /// If set, this file will be completely ignored outside of initial parsing errors.
         /// </summary>
         public bool Disabled { get; set; }
-
-        public IList<Instruction> Ins { get; set; }
-
         /// <summary>
         /// A means to override the file load order.
         /// <br />Lower number files go off before higher number files.
@@ -27,8 +24,17 @@ namespace Eirshy.PB.PressXToJson.Entities {
         /// </summary>
         public int Priority { get; set; } = 1000;
 
+        public IList<Instruction> Ins { get; set; }
+
+
+        /// <summary>
+        /// <c>this [Filename] [KeyRoot] [Language] -&gt; LanguageEntry</c>
+        /// <br />Yes this is kinda ridiculous lol
+        /// </summary>
+        public Dictionary<string, Dictionary<string, Dictionary<string, LocalizationEntry>>> Text { get; set; }
+
         #endregion
-        #region Advanced Properties (...rest) -- NONE
+        #region Advanced Properties (...Rest) -- NONE
         #endregion
 
         #region Mod Owner, Load Orders, & physical source

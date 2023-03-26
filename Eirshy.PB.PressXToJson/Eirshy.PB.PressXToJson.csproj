@@ -74,6 +74,7 @@
     <Compile Include="Config\Logs.cs" />
     <Compile Include="Config\LogsEntry.cs" />
     <Compile Include="Config\RefOutput.cs" />
+    <Compile Include="Entities\LocalizationEntry.cs" />
     <Compile Include="Entities\ModSettings.cs" />
     <Compile Include="Entities\ModSettingsFile.cs" />
     <Compile Include="Enums\LoggingLevel.cs" />
@@ -95,13 +96,14 @@
     <Compile Include="Fixes\FixesRollup.cs" />
     <Compile Include="Fixes\Functions\Equipment\TrimSystemsByTagFilterPatches.cs" />
     <Compile Include="JsonExtensions.cs" />
-    <Compile Include="Managers\JsonModApplier.cs" />
+    <Compile Include="Managers\EditDataManager.cs" />
     <Compile Include="DataProcessing\DataLinker.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Managers\EditLocalizationManager.cs" />
     <Compile Include="Managers\LoadStateManager.cs" />
     <Compile Include="Managers\ReferenceFilesManager.cs" />
     <Compile Include="PressXToJson.cs" />
-    <Compile Include="Managers\JsonModLoader.cs" />
+    <Compile Include="Managers\LoadingManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

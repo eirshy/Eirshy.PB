@@ -56,14 +56,14 @@ namespace Eirshy.PB.PressXToJson.Config {
         internal void SyncModEntries() {
             try {
                 if(AddActiveJsonMods) {
-                    foreach(var mod in JsonModLoader.AllJsonMods.Keys) {
+                    foreach(var mod in LoadingManager.AllJsonMods.Keys) {
                         if(!Mods.ContainsKey(mod)) {
                             Mods.Add(mod, new LogsEntry());
                         }
                     }
                 }
                 if(RemoveInactiveJsonMods) {
-                    var keep = JsonModLoader.AllJsonMods;
+                    var keep = LoadingManager.AllJsonMods;
                     Mods.Keys
                         .Where(mod => !keep.ContainsKey(mod))
                         .ToList()//prevents moving-target error

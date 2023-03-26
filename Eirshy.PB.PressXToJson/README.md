@@ -23,11 +23,11 @@ Mostly my head, but I've moved some of it to markdown files in the
  snazzy "wiki" feature that Github provides, but for now that's all
  there is.
 
-## What are we waiting on?
+## What are we waiting on? (pre-1.0)
 * Convert all my current "could be published" to be examples
 * Basic reference docs for Instruction/InstructionFile Schemas
 
-## What the Future Holds?
+## What the Future Holds? (post-1.0 or earlier)
 * "Less-Lazy Loading" mode
   * When init finishes, confirm all that we touch loaded
   * Guarantees syntax errors are found immediately
@@ -40,10 +40,12 @@ Mostly my head, but I've moved some of it to markdown files in the
   * Maybe also make Orphan look at all levels that modified
     a file and take the most permissive if there's more than
     one?
+* Adjust Copy to not trigger a serialization loop if the from
+    target isn't modified
 * Real reference docs
 * Proper schema definitions for our internals
 * Schema "generator" for game classes.
-* More PLINQ usage
+  * Or at least a few manual ones, like for Subsystems
 * Built-In Instruction Macros
   * "New Mech" for sure
 * External Instruction Macros

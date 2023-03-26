@@ -89,7 +89,7 @@ namespace Eirshy.PB.PressXToJson {
             if(Orphan._logFile != null) return;
             var owner = PressXToJson.Config.Logs.OrphanageOwner;
 
-            if(Managers.JsonModLoader.AllJsonMods.TryGetValue(owner, out var mod)) {
+            if(Managers.LoadingManager.AllJsonMods.TryGetValue(owner, out var mod)) {
                 Orphan._logFile = Path.Combine(mod.RootLocation, LoggingCustodyConfig.FILENAME_Orphanage);
                 Orphan.EnforceFilesize(PressXToJson.Config.Logs.MaxKB_OrphanLog);
             } else {
@@ -163,7 +163,7 @@ namespace Eirshy.PB.PressXToJson {
         /// <param name="alsoDeregister">If true we'll also dregister all non-Orphan loggers. Don't normally do this. Thread-unsafe.</param>
         public static void FullFlush(bool force = false, bool alsoDeregister = false) {
             if(!force && !Managers.LoadStateManager.IsInitFinished) return;
-            Managers.JsonModLoader.LogAllErrors();
+            Managers.LoadingManager.LogAllErrors();
             var adopted = _adopted.Values.ToList();
             if(alsoDeregister) _adopted.Clear();
             foreach(var l in adopted) {
@@ -175,16 +175,7 @@ namespace Eirshy.PB.PressXToJson {
             }
             Orphan.Flush();
         }
-        
 
-        public void Info(string message) {
-            switch(Level) {
-                case LoggingLevel.Info:
-                case LoggingLevel.InfoVerbose:
-                    _log(message);
-                    break;
-            }
-        }
         public void Error(string message, Exception ex = null) {
             switch(Level) {
                 case LoggingLevel.ErrorOnly:
@@ -207,6 +198,25 @@ namespace Eirshy.PB.PressXToJson {
                     break;
             }
         }
+        public void Info(string message) {
+            switch(Level) {
+                case LoggingLevel.Info:
+                case LoggingLevel.InfoVerbose:
+                    _log(message);
+                    break;
+            }
+        }
+        public void InfoVerboseDeserialize(string message, object jsonifyOnVerbose) {
+            switch(Level) {
+                case LoggingLevel.Info:
+                    _log(message);
+                    break;
+                case LoggingLevel.InfoVerbose:
+                    _log($"{message} -- Deserialized: {jsonifyOnVerbose.ToJson()}");
+                    break;
+            }
+        }
+
 
 
         public void HookError(string context, Exception ex = null) => Error($"Hook failed -- {context}", ex);

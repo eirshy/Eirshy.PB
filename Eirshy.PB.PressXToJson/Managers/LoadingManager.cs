@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Diagnostics;
 
 using HarmonyLib;
-
-using Newtonsoft.Json.Linq;
 
 using PhantomBrigade.Mods;
 using PhantomBrigade.Data;
@@ -16,9 +15,12 @@ using Eirshy.PB.PressXToJson.Config;
 using Eirshy.PB.PressXToJson.DataProcessing;
 
 namespace Eirshy.PB.PressXToJson.Managers {
-    internal static class JsonModLoader {
-        private static Type THIS => typeof(JsonModLoader);
+    internal static class LoadingManager {
+        private static Type THIS => typeof(LoadingManager);
         static Dictionary<string, ModSettings> _allMods { get; } = new Dictionary<string, ModSettings>();
+        /// <summary>
+        /// Keyed by Mod ID
+        /// </summary>
         public static IReadOnlyDictionary<string, ModSettings> AllJsonMods => _allMods;
         public static void LogAllErrors() => _allMods.Values.ForEach(mod => mod.LogAllErrors());
 
@@ -57,7 +59,8 @@ namespace Eirshy.PB.PressXToJson.Managers {
         /// loaded, assuming it hasn't gotten a shipment already.
         /// </remarks>
         public static void FinalizeLoadedMods() {
-            JsonModApplier.LoadTypeInstructions();
+            EditDataManager.LoadTypeInstructions();
+            EditLocalizationManager.LoadLocalizations();
             Logger.TransferOrphanage();
             PressXToJson.Config.SyncConfig();
         }
@@ -66,26 +69,25 @@ namespace Eirshy.PB.PressXToJson.Managers {
         public static void LoadConfigEdits(string id, string pathConfigEdits, ModLoadedData loadedData) {
             if(loadedData is null || !Directory.Exists(pathConfigEdits)) return;
             if(!loadedData.metadata.includesConfigEdits) return; //caller shouldn't've called us?
-
+            var pathPrefix = pathConfigEdits.Replace('\\', '/');
             var paths = new SortedSet<string>(
-                Directory.EnumerateFiles(pathConfigEdits, "*.json", SearchOption.AllDirectories)
+                Directory.EnumerateFiles(pathPrefix, "*.json", SearchOption.AllDirectories)
+                .Select(s => s.Replace('\\', '/'))
             );
             if(!paths.Any()) return; //no JSON files for us to read, ignore the mod.
-
-            var preproc = new InstructionPreProcessor();
-            var root = pathConfigEdits.Replace('\\', '/');
-            root = root.Substring(0, root.Substring(0, root.Length-1).LastIndexOf('/')+1);
-
+            
+            var root = pathPrefix.Substring(0, pathPrefix.Substring(0, pathPrefix.Length-1).LastIndexOf('/')+1);
             var mod = new ModSettings(loadedData, root);
             mod.LoadSettingsFile();
             mod.LogSettings = PressXToJson.Config.Logs.Mods.TryGetValue(loadedData.metadata.id, out var le) ? le : LogsEntry.DEFAULT;
             _allMods.Add(loadedData.metadata.id, mod);
 
+            var sw = Stopwatch.StartNew();
             mod.Files = paths
-                .AsParallel()
                 .Select((path, pi) => {
-                    var shortpath = path.Replace('\\', '/').Replace(pathConfigEdits, "");
-                    var shortDir = Path.GetDirectoryName(shortpath).Replace('\\', '/');
+                    var preproc = new InstructionPreProcessor();
+                    var shortpath = path.Replace(pathPrefix, "");
+                    var shortDir = Path.GetDirectoryName(shortpath);
 
                     InstructionsFile file;
                     try {
@@ -124,7 +126,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
                     }
                 
                     //Instruction finishing
-                    for(var insi = file.Ins.Count; insi-->0;) {
+                    for(var insi = file.Ins?.Count ?? 0; insi-->0;) {
                         var ins = file.Ins[insi];
                         try {
                             ins.SourceIndex = insi;
@@ -137,24 +139,26 @@ namespace Eirshy.PB.PressXToJson.Managers {
                                 var insDir = Path.GetDirectoryName(ins.AsFile).Replace('\\', '/');
                                 ins.TargetRoute = fromRoot ? insDir.Substring(2) : Path.Combine(shortDir, insDir);
                                 ins.TargetType = _routefile2type(ins.TargetRoute, ins.TargetName);
-                                if(fromRoot) ins.Log.Info($"Root Route got type {ins.TargetType} : {ins.TargetRoute}");
                             }
                             preproc.PreProcess(ins);
                         } catch(Exception ex) {
                             ins.AddError(ex);
                         }
                     }
+                    
+                    //Localization Finishing is handled by the Localization Manager!
+                    
                     return file;
                 })
                 .ToList()
             ;
+            sw.Stop();
             //make sure our logs will be in the right order...
             mod.Files.Sort();
 
             //-----
-            mod.Log.Info(mod.Stats);
+            mod.Log.Info($"{mod.Stats} -- loaded in {sw.ElapsedMilliseconds} ms");
         }
-
 
 
         private static Type _routefile2type(string route, string file) {
