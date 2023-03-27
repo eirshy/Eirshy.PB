@@ -159,6 +159,7 @@ namespace Eirshy.PB.PressXToJson {
         );
         static readonly Lazy<JsonConverter[]> _jsc = new Lazy<JsonConverter[]>(()=>_jss.Value.Converters.ToArray(), LazyThreadSafetyMode.PublicationOnly);
 
+
         #endregion
 
         // strings
@@ -180,6 +181,8 @@ namespace Eirshy.PB.PressXToJson {
         internal static string ToRawJson(this JObject jobj) {
             return jobj.ToString(Formatting.Indented, _jsc.Value);
         }
+
+
 
         //Json Converters
         internal static void WritePropVal<T>(this JsonWriter writer, string name, T value) {

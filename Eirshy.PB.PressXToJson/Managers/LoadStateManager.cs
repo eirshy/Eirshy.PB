@@ -10,7 +10,7 @@ using PhantomBrigade;
 using PhantomBrigade.Mods;
 using PhantomBrigade.Game.Systems;
 
-using Eirshy.PB.PressXToJson.DataProcessing;
+using Eirshy.PB.PressXToJson.Processing;
 
 namespace Eirshy.PB.PressXToJson.Managers {
     internal static class LoadStateManager {
@@ -48,7 +48,6 @@ namespace Eirshy.PB.PressXToJson.Managers {
             Logger.FullFlush(true, true);
 
             DataLinker.ClearLinkerCache();
-            DataLinker.ClearProcessorCache();
 
             LoadingManager.Reset();
             EditDataManager.Reset();

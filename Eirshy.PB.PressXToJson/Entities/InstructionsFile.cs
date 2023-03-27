@@ -8,10 +8,24 @@ using Eirshy.PB.PressXToJson.Enums;
 
 namespace Eirshy.PB.PressXToJson.Entities {
     internal class InstructionsFile : IComparable<InstructionsFile>, IEquatable<InstructionsFile> {
-        #region Readonly/Const Defaults -- NONE
+        #region Readonly/Const Defaults
+
+        //Instruction
+        static readonly string DEFAULT_InstructionNamespace =
+            $"{nameof(PhantomBrigade)}.{nameof(PhantomBrigade.Data)}."
+        ;
+        static readonly string DEFAULT_InstructionAssembly = typeof(ModManager).Assembly.GetName().Name;
+
+        //Composite
+        static readonly string DEFAULT_CompositeNamespace =
+            $"{nameof(PhantomBrigade)}.{nameof(PhantomBrigade.Functions)}.{nameof(PhantomBrigade.Functions.Equipment)}."
+        ;
+        static readonly string DEFAULT_CompositeAssembly = typeof(ModManager).Assembly.GetName().Name;
+
+
         #endregion
 
-        #region Standard Edit Properties (Disabled, Priority, Ins, Text)
+        #region Standard Edit Properties (Disabled, Priority, Ins, Text, Macro)
 
         /// <summary>
         /// If set, this file will be completely ignored outside of initial parsing errors.
@@ -33,8 +47,50 @@ namespace Eirshy.PB.PressXToJson.Entities {
         /// </summary>
         public Dictionary<string, Dictionary<string, Dictionary<string, LocalizationEntry>>> Text { get; set; }
 
+        public Dictionary<string, MacroDef> Macro { get; set; }
+
         #endregion
-        #region Advanced Properties (...Rest) -- NONE
+        #region Advanced Properties (...Rest)
+
+        /// <summary>
+        /// If set, we'll use this as our File's Type, instead of the file path.
+        /// <br />Same rules as @TYPE just with <c>PhantomBrigade.Data</c> as the default namespace.
+        /// </summary>
+        public string AsType { get; set; } = null;
+        public string AsName { get; set; } = null;
+
+
+        /// <summary>
+        /// The "default" namespace value for @TYPE translating.
+        /// Must end with a dot ("<c>.</c>").
+        /// <br />Default is <c>PhantomBrigade.Functions.Equipment.</c>
+        /// </summary>
+        public string CompositeNamespace { get => _compositeNamespace ?? DEFAULT_CompositeNamespace; set => _compositeNamespace = value; }
+        string _compositeNamespace = null;
+
+        /// <summary>
+        /// The "default" assembly value for @TYPE translating.
+        /// <br />Default is the PhantomBrigade main assembly.
+        /// </summary>
+        public string CompositeAssembly { get => _compositeAssembly ?? DEFAULT_CompositeAssembly; set => _compositeAssembly = value; }
+        string _compositeAssembly = null;
+
+
+        /// <summary>
+        /// The "default" namespace value for @TYPE translating.
+        /// Must end with a dot ("<c>.</c>").
+        /// <br />Default is <c>PhantomBrigade.Functions.Equipment.</c>
+        /// </summary>
+        public string InstructionNamespace { get => _instructionNamespace ?? DEFAULT_InstructionNamespace; set => _instructionNamespace = value; }
+        string _instructionNamespace = null;
+
+        /// <summary>
+        /// The "default" assembly value for @TYPE translating.
+        /// <br />Default is the PhantomBrigade main assembly.
+        /// </summary>
+        public string InstructionAssembly { get => _instructionAssembly ?? DEFAULT_InstructionAssembly; set => _instructionAssembly = value; }
+        string _instructionAssembly = null;
+
         #endregion
 
         #region Mod Owner, Load Orders, & physical source
@@ -46,10 +102,10 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #endregion
         #region Resolved Data Linking
 
-        internal Type SourceFileType { get; set; }
+        internal Type AmbientType { get; set; }
 
         internal string SourceRoute { get; set; }
-        internal string SourceFile { get; set; }
+        internal string AmbientName { get; set; }
 
         #endregion
         #region Exception Spooling
@@ -94,7 +150,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #endregion
 
         internal string Name => $"{Owner.Name}::{ShortName}";
-        internal string ShortName => $"{SourceRoute}/{SourceFile}";
+        internal string ShortName => $"{SourceRoute}/{AmbientName}";
 
         #region Shorthand Utilities -- NONE
         #endregion
@@ -102,6 +158,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #region Interface implementation -- IComparable, IEquatable, IDisposable
 
         public int CompareTo(InstructionsFile other) {
+            if(ReferenceEquals(this, other)) return 0;
             var cmp = Owner.CompareTo(other.Owner);
             if(cmp != 0) return cmp;
             cmp = Priority.CompareTo(other.Priority);

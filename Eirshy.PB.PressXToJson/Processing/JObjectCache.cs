@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 using Eirshy.PB.PressXToJson.Entities;
 
-namespace Eirshy.PB.PressXToJson.DataProcessing {
+namespace Eirshy.PB.PressXToJson.Processing {
     internal class JObjectCache<T> {
         private IDictionary<string, T> _backing { get; }
         private Dictionary<string, JObject> _cache { get; }
@@ -80,38 +80,18 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
                 };
                 try {
                     var typed = val.ToType<T>();
-                    _log(keylogs.Value, logger => logger.DeserializeSuccess(keylogs.Key, typed));
+                    keylogs.Value.LogForSet(logger => logger.DeserializeSuccess(keylogs.Key, typed));
                     _backing[keylogs.Key] = typed;
                 } catch (Exception ex) {
-                    _log(keylogs.Value, logger => logger.DeserializeError(keylogs.Key, typeof(T), val, ex));
+                    keylogs.Value.LogForSet(logger => logger.DeserializeError(keylogs.Key, typeof(T), val, ex));
                 }
             }
         }
 
         public void LogForKey(string key, Action<Logger> logAction) {
             if(_keyedLoggers.TryGetValue(key, out var loggers)) {
-                _log(loggers, logAction);
+                loggers.LogForSet(logAction);
             }
         }
-        void _log(HashSet<Logger> loggers, Action<Logger> logAction) {
-            try {
-                //orphans can have multiple levels, so we have to deduplicate them
-                Logger orphan = null;
-                foreach(var logger in loggers) {
-                    if(logger.LogsToOrphanage) {
-                        if(orphan is null) orphan = logger;
-                        else if((int)orphan.Level < (int)logger.Level) {
-                            orphan = logger;
-                        }
-                    } else {
-                        logAction(logger);
-                    }
-                }
-                if(orphan != null) logAction(orphan);
-            } catch(Exception ex) {
-                Logger.Orphan.Error("Unknown Error executing Linker Cache Logging", ex);
-            }
-        }
-
     }
 }

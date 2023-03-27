@@ -13,13 +13,7 @@ using Eirshy.PB.PressXToJson.Enums;
 
 namespace Eirshy.PB.PressXToJson.Entities {
     internal class Instruction : IComparable<Instruction>, IEquatable<Instruction> {
-        #region Readonly/Const Defaults
-
-        static readonly string DEFAULT_CompositeNamespace =
-            $"{nameof(PhantomBrigade)}.{nameof(PhantomBrigade.Functions)}.{nameof(PhantomBrigade.Functions.Equipment)}."
-        ;
-        static readonly string DEFAULT_CompositeAssembly = typeof(ModManager).Assembly.GetName().Name;
-
+        #region Readonly/Const Defaults -- NONE
         #endregion
 
         #region Basic Properties (Disabled, Command, Target, Data)
@@ -54,6 +48,19 @@ namespace Eirshy.PB.PressXToJson.Entities {
         /// </summary>
         public string AsFile { get; set; }
 
+        /// <summary>
+        /// If set, we'll use this as our Type.
+        /// Has a higher priority than the AsFile or the InstructionsFile physical path.
+        /// <br />Same rules as @TYPE just with <c>PhantomBrigade.Data</c> as the default namespace.
+        /// </summary>
+        public string AsType { get; set; }
+        /// <summary>
+        /// If set, we'll use this as our Name.
+        /// Has a higher priority than the filename in AsFile or the InstructionsFile physical path.
+        /// </summary>
+        public string AsName { get; set; }
+
+
         public bool FirstMatchOnly { get; set; } = false;
 
         /// <summary>
@@ -61,14 +68,14 @@ namespace Eirshy.PB.PressXToJson.Entities {
         /// Must end with a dot ("<c>.</c>").
         /// <br />Default is <c>PhantomBrigade.Functions.Equipment.</c>
         /// </summary>
-        public string CompositeNamespace { get => _compositeNamespace ?? DEFAULT_CompositeNamespace; set => _compositeNamespace = value; }
+        public string CompositeNamespace { get => _compositeNamespace ?? Owner.CompositeNamespace; set => _compositeNamespace = value; }
         string _compositeNamespace = null;
 
         /// <summary>
         /// The "default" assembly value for @TYPE translating.
         /// <br />Default is the PhantomBrigade main assembly.
         /// </summary>
-        public string CompositeAssembly { get => _compositeAssembly ?? DEFAULT_CompositeAssembly; set => _compositeAssembly = value; }
+        public string CompositeAssembly { get => _compositeAssembly ?? Owner.CompositeAssembly; set => _compositeAssembly = value; }
         string _compositeAssembly = null;
 
         #endregion
@@ -78,17 +85,16 @@ namespace Eirshy.PB.PressXToJson.Entities {
         internal InstructionsFile Owner { get; set; }
         internal int SourceIndex { get; set; }
 
+        internal int SubIndex { get; set; } = -1;
+
         #endregion
         #region Resolved Data Linking
 
-        internal Type TargetType { get => _type ?? Owner.SourceFileType; set => _type = value; }
+        internal Type TargetType { get => _type ?? Owner.AmbientType; set => _type = value; }
         Type _type = null;
 
-        internal string TargetName { get => _targetName ?? Owner.SourceFile; set => _targetName = value; }
+        internal string TargetName { get => _targetName ?? Owner.AmbientName; set => _targetName = value; }
         string _targetName = null;
-
-        internal string TargetRoute { get => _targetRoute ?? Owner.SourceRoute; set => _targetRoute = value; }
-        string _targetRoute = null;
 
         #endregion
         #region Exception Spooling
@@ -123,7 +129,7 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #endregion
 
         internal string Name => $"{Owner.Name}::{ShortName}";
-        internal string ShortName => $"ins[{SourceIndex}]";
+        internal string ShortName => SubIndex < 0 ? $"ins[{SourceIndex}]" : $"ins[{SourceIndex}][{SubIndex}]";
 
         #region Shorthand Utilities
 
@@ -136,11 +142,14 @@ namespace Eirshy.PB.PressXToJson.Entities {
         #region Interface implementation -- IComparable, IEquatable
 
         public int CompareTo(Instruction other) {
+            if(ReferenceEquals(this, other)) return 0;
             var cmp = Command.ComparePriority(other.Command);
             if(cmp != 0) return cmp;
-            if(Owner != other.Owner) {
-                return Owner.CompareTo(other.Owner);
-            } else return SourceIndex.CompareTo(other.SourceIndex);
+            cmp = Owner.CompareTo(other.Owner);
+            if(cmp != 0) return cmp;
+            cmp = SourceIndex.CompareTo(other.SourceIndex);
+            if(cmp != 0) return cmp;
+            return SubIndex.CompareTo(other.SubIndex);
         }
 
         public bool Equals(Instruction other) {

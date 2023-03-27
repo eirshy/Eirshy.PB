@@ -20,6 +20,7 @@ namespace Eirshy.PB.PressXToJson {
     /// Thread Safe is all contexts we introduced.
     /// </remarks>
     internal class Logger : IEquatable<Logger>, IDisposable {
+        public bool Buffered => true;
         static string DEFAULT_FILE => Path.Combine(PressXToJson.DllRoot, LoggingCustodyConfig.FILENAME_Orphanage);
         static readonly ConcurrentDictionary<string, Logger> _adopted = new ConcurrentDictionary<string, Logger>();
 
@@ -128,7 +129,6 @@ namespace Eirshy.PB.PressXToJson {
         public string Name { get; private set; }
         public LoggingLevel Level { get; private set; }
         public LoggingCustody Custody { get; private set; }
-        public bool Buffered => true;
 
         string _logFile = null;
         public string LogFile => _logFile ?? Orphan?._logFile ?? DEFAULT_FILE;//safety, we coalesce to this.
@@ -165,13 +165,22 @@ namespace Eirshy.PB.PressXToJson {
         #endregion
         #region Base logging
 
-        readonly Lazy<ConcurrentQueue<string>> _msg = new Lazy<ConcurrentQueue<string>>(
-            ()=>new ConcurrentQueue<string>(), LazyThreadSafetyMode.PublicationOnly
-        );
+        ConcurrentQueue<string> __msg = null;
+        ConcurrentQueue<string> _msg {
+            get {
+                if(__msg != null) return __msg;
+                if(!IsOrphanage && LogsToOrphanage) {
+                    _ = Interlocked.CompareExchange(ref __msg, Orphan._msg, null);
+                } else {
+                    _ = Interlocked.CompareExchange(ref __msg, new ConcurrentQueue<string>(), null);
+                }
+                return __msg;
+            }
+        }
 
         void _log(string msg) {
             if(Buffered) {
-                _msg.Value.Enqueue(msg);
+                _msg.Enqueue(msg);
             } else {
                 File.AppendAllText(LogFile, "\n"+msg);
             }
@@ -180,10 +189,10 @@ namespace Eirshy.PB.PressXToJson {
         int _isFlushing = 0;
         public void Flush() {
             if(Buffered) {
-                if(!_msg.IsValueCreated || _msg.Value.Count == 0) return;
+                if(__msg is null || __msg.Count == 0) return;
                 if(Interlocked.Exchange(ref _isFlushing, -1) != 0) return;//someone else is already
-                var toOut = new List<string>(_msg.Value.Count +5);
-                while(_msg.Value.TryDequeue(out var msg)) {
+                var toOut = new List<string>(__msg.Count +5);
+                while(__msg.TryDequeue(out var msg)) {
                     toOut.Add(msg);
                 }
                 _isFlushing = 0;
@@ -291,6 +300,17 @@ namespace Eirshy.PB.PressXToJson {
 
         #endregion
 
+        #region Other Helpers/Shorthand
+
+        /// <summary>
+        /// Returns TRUE if other has a more-detailed logging level.
+        /// </summary>
+        public bool IsLowerLevelThan(Logger other) {
+            return (int)Level < (int)other.Level;
+        }
+
+        #endregion
+
         #region Interface implementation -- IEquatable, IDisposable
 
         public bool Equals(Logger other) => Name == other?.Name;
@@ -310,5 +330,31 @@ namespace Eirshy.PB.PressXToJson {
         }
 
         #endregion
+    }
+
+    internal static class LoggerExtensions {
+
+        /// <summary>
+        /// Executes the logging action 
+        /// </summary>
+        public static void LogForSet(this ISet<Logger> set, Action<Logger> action) {
+            try {
+                //orphans can have multiple levels, so we have to dedup to the highest one
+                Logger forOrphan = null;
+                foreach(var logger in set) {
+                    if(logger.LogsToOrphanage) {
+                        if(forOrphan is null) forOrphan = logger;
+                        else if(forOrphan.IsLowerLevelThan(logger)) {
+                            forOrphan = logger;
+                        }
+                    } else {
+                        action(logger);
+                    }
+                }
+                if(forOrphan != null) action(forOrphan);
+            } catch(Exception ex) {
+                Logger.Orphan.Error("Linker Set Logging Error", ex);
+            }
+        }
     }
 }

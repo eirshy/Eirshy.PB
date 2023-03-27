@@ -70,6 +70,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\AutoType.cs" />
     <Compile Include="Config\ConfigFile.cs" />
     <Compile Include="Config\Logs.cs" />
     <Compile Include="Config\LogsEntry.cs" />
@@ -79,15 +80,16 @@
     <Compile Include="Entities\ModSettingsFile.cs" />
     <Compile Include="Enums\LoggingLevel.cs" />
     <Compile Include="Enums\LoggingCustody.cs" />
+    <Compile Include="Enums\MacroVarRefAction.cs" />
     <Compile Include="Enums\RefOutputFreq.cs" />
     <Compile Include="Exceptions\AutoTypingException.cs" />
     <Compile Include="Exceptions\CommandTargetTypeException.cs" />
     <Compile Include="Exceptions\CommandException.cs" />
     <Compile Include="Exceptions\CommandTokenTypeException.cs" />
     <Compile Include="Exceptions\InstructionParseException.cs" />
-    <Compile Include="DataProcessing\JObjectCache.cs" />
-    <Compile Include="DataProcessing\InstructionPreProcessor.cs" />
-    <Compile Include="DataProcessing\PathedInstructionProcessor.cs" />
+    <Compile Include="Processing\JObjectCache.cs" />
+    <Compile Include="Processing\InstructionPreProcessor.cs" />
+    <Compile Include="Processing\PathedCommandProcessor.cs" />
     <Compile Include="Entities\Instruction.cs" />
     <Compile Include="Entities\InstructionsFile.cs" />
     <Compile Include="Enums\Command.cs" />
@@ -96,8 +98,11 @@
     <Compile Include="Fixes\FixesRollup.cs" />
     <Compile Include="Fixes\Functions\Equipment\TrimSystemsByTagFilterPatches.cs" />
     <Compile Include="JsonExtensions.cs" />
+    <Compile Include="Entities\MacroArgDef.cs" />
+    <Compile Include="Entities\MacroDef.cs" />
+    <Compile Include="Entities\MacroVarRef.cs" />
     <Compile Include="Managers\EditDataManager.cs" />
-    <Compile Include="DataProcessing\DataLinker.cs" />
+    <Compile Include="Processing\DataLinker.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Managers\EditLocalizationManager.cs" />
     <Compile Include="Managers\LoadStateManager.cs" />
@@ -110,6 +115,8 @@
     <None Include="metadata.yaml" />
     <None Include="README.md" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Macros\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

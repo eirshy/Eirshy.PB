@@ -16,25 +16,30 @@ using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Enums;
 using Eirshy.PB.PressXToJson.Exceptions;
 
-namespace Eirshy.PB.PressXToJson.DataProcessing {
+namespace Eirshy.PB.PressXToJson.Processing {
     internal abstract class DataLinker {
         private static readonly ConcurrentDictionary<Type, DataLinker> _linkers = new ConcurrentDictionary<Type, DataLinker>();
-        protected static PathedInstructionProcessor _pathed = new PathedInstructionProcessor(); //futureproofing in case I think of a cachable for it
 
         public static DataLinker GetForType(Type type) {
             if(_linkers.TryGetValue(type, out var ret)) return ret;
             return _linkers.GetOrAdd(type, (DataLinker)typeof(DataLinker<>).MakeGenericType(type).GetConstructor(Type.EmptyTypes).Invoke(null));
         }
+        #region Cache-clearing
         
         public static void ClearLinkerCache() => _linkers.Clear();
-        public static void ClearProcessorCache() => _pathed = new PathedInstructionProcessor();
 
-        
+        #endregion
+        #region Abstract Boxed Apply Instructions
+
         public abstract void Apply(List<Instruction> instructions, object dataInternal, ref object __result);
         public abstract void Apply(List<Instruction> instructions, object dataInternal);
-
+        
+        #endregion
+        #region Abstract Boxed Write References
+        
         public abstract void WriteReferences(string path, bool missingOnly, object dataInternal);
-
+        
+        #endregion
 
     }
 
@@ -51,29 +56,39 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
 
         public void Apply(List<Instruction> instructions, T dataInternal, ref object __result) {
             var target = (__result ?? dataInternal ?? new T()).ToJObject();
+            var pathproc = new PathedCommandProcessor();
+            var loggers = new HashSet<Logger>();
             foreach(var ins in instructions) {
                 if(ins.Disabled) continue;
                 try {
+                    _ = loggers.Add(ins.Log);
                     var updated = PathlessApply(ins, target, null);
-                    if(updated is null) target = _pathed.Apply(ins, target);
+                    if(updated is null) target = pathproc.Apply(ins, target);
                     else target = updated;
                 } catch(Exception ex) {
                     ins.AddError(ex);
                 }
             }
-            __result = target.ToType<T>();
+            try {
+                var ret = target.ToType<T>();
+                loggers.LogForSet(logger => logger.DeserializeSuccess("Singleton", ret));
+                __result = ret;
+            } catch (Exception ex) {
+                loggers.LogForSet(logger => logger.DeserializeError("Singleton", typeof(T), target, ex));
+            }
             Logger.FullFlush();
         }
 
         public void Apply(List<Instruction> instructions, SortedDictionary<string, T> dataInternal) {
             var cache = new JObjectCache<T>(dataInternal);
             Logger.Orphan.Info($"Applying {instructions.Count} ins to type {typeof(T).Name}");
+            var pathproc = new PathedCommandProcessor();
             foreach(var ins in instructions) {
                 if(ins.Disabled) continue;
                 var target = cache.Get(ins.TargetName, ins.Log);
                 try {
                     var updated = PathlessApply(ins, target, cache);
-                    if(updated is null) updated = _pathed.Apply(ins, target);
+                    if(updated is null) updated = pathproc.Apply(ins, target);
                     if(!ReferenceEquals(updated, target)) {
                         cache.Set(ins.TargetName, updated, ins.Log);
                     }

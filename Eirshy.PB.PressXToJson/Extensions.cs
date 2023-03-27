@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Reflection;
+
+using Eirshy.PB.PressXToJson.Exceptions;
 
 namespace Eirshy.PB.PressXToJson {
     internal static class Extensions {
+
         internal static TValue GetOrNew<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key) where TValue : new() {
             if(dict.TryGetValue(key, out TValue value)) return value;
             value = new TValue();

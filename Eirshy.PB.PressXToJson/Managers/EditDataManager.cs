@@ -9,7 +9,7 @@ using HarmonyLib;
 using PhantomBrigade.Mods;
 using PhantomBrigade.Data;
 
-using Eirshy.PB.PressXToJson.DataProcessing;
+using Eirshy.PB.PressXToJson.Processing;
 using Eirshy.PB.PressXToJson.Entities;
 
 namespace Eirshy.PB.PressXToJson.Managers {

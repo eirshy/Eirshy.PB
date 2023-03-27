@@ -14,7 +14,10 @@ namespace Eirshy.PB.PressXToJson.Exceptions {
         private static string _write(JTokenType got) => $"@TYPE expect a string token, got {got}";
         public AutoTypingException(JTokenType got) : base(_write(got)) { }
 
-        private static string _write(string got) => $"@TYPE parse error, reading: \"{got}\"";
-        public AutoTypingException(string got) : base(_write(got)) { }
+        private static string _write(string reading) {
+            return $"@TYPE parse error, reading: \"{reading}\"";
+        } 
+        public AutoTypingException(string reading) : base(_write(reading)) { }
+        public AutoTypingException(string reading, Exception inner) : base(_write(reading), inner) { }
     }
 }

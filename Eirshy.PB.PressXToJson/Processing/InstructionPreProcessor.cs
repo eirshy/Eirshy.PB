@@ -12,11 +12,10 @@ using PhantomBrigade.Data;
 using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Enums;
 using Eirshy.PB.PressXToJson.Exceptions;
+using Eirshy.PB.PressXToJson.Helpers;
 
-namespace Eirshy.PB.PressXToJson.DataProcessing {
+namespace Eirshy.PB.PressXToJson.Processing {
     internal class InstructionPreProcessor {
-        readonly Regex _autoType = new Regex(@"^((?:\w+\.)*)(\w+)(?:$|[\s,]+([\w.-]*)$)");
-
         /// <summary>
         /// Applies any applicable validations and preprocessors to the passed instruction.
         /// <br />Marks the instruction as Disabled if an error occurs.
@@ -90,19 +89,11 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
         /// </summary>
         internal void TranslateAutoType(Instruction ins) {
             var sel = ins.Data.SelectTokens("..['@TYPE']").ToList();
-            foreach(var x in sel) {
-                if(x.Type != JTokenType.String) throw new AutoTypingException(x.Type);
-
-                var value = x.Value<string>()?.Trim();
-                if(string.IsNullOrEmpty(value)) continue;//silent skip, it's ignored.
-
-                var processed = _autoType.Match(value);
-                if(!processed.Success) throw new AutoTypingException(value);
-
-                var ns = processed.Groups[1].Value == "" ? ins.CompositeNamespace : processed.Groups[1].Value;
-                var cls = processed.Groups[2].Value;
-                var asm = processed.Groups[3].Value == "" ? ins.CompositeAssembly : processed.Groups[3].Value;
-                x.Parent.Parent.AddFirst(new JProperty("$type", $"{ns}{cls}, {asm}"));
+            foreach(var ele in sel) {
+                if(ele.Type != JTokenType.String) throw new AutoTypingException(ele.Type);
+                var value = ele.Value<string>();
+                var at = AutoType.GetFrom(value, ins.CompositeNamespace, ins.CompositeAssembly);
+                ele.Parent.Parent.AddFirst(at.ToJProp());
             }
         }
     }

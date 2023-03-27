@@ -11,12 +11,15 @@ using PhantomBrigade.Mods;
 using PhantomBrigade.Data;
 
 using Eirshy.PB.PressXToJson.Entities;
+using Eirshy.PB.PressXToJson.Exceptions;
 using Eirshy.PB.PressXToJson.Config;
-using Eirshy.PB.PressXToJson.DataProcessing;
+using Eirshy.PB.PressXToJson.Processing;
+using Eirshy.PB.PressXToJson.Helpers;
 
 namespace Eirshy.PB.PressXToJson.Managers {
     internal static class LoadingManager {
         private static Type THIS => typeof(LoadingManager);
+        
         static Dictionary<string, ModData> _allMods { get; } = new Dictionary<string, ModData>();
         /// <summary>
         /// Keyed by Mod ID
@@ -98,7 +101,7 @@ namespace Eirshy.PB.PressXToJson.Managers {
                             PhysicalSource = path,
                             Owner = mod,
                             SourceRoute = shortDir,
-                            SourceFile = Path.GetFileNameWithoutExtension(path),
+                            AmbientName = Path.GetFileNameWithoutExtension(path),
                             Ins = Array.Empty<Instruction>(),
                         };
                         file.AddError(ex);
@@ -111,9 +114,13 @@ namespace Eirshy.PB.PressXToJson.Managers {
                         file.Owner = mod;
                         file.PhysicalSource = path;
                         file.SourceRoute = shortDir;
-                        file.SourceFile = Path.GetFileNameWithoutExtension(path);
-
-                        file.SourceFileType = _routefile2type(file.SourceRoute, file.SourceFile);
+                        file.AmbientName = file.AsName ?? Path.GetFileNameWithoutExtension(path);
+                        if(!string.IsNullOrWhiteSpace(file.AsType)) {
+                            var at = AutoType.GetFrom(file.AsType, file.InstructionNamespace, file.InstructionAssembly);
+                            file.AmbientType = at.ToType();
+                        } else {
+                            file.AmbientType = _routefile2type(file.SourceRoute, file.AmbientName);
+                        }
                     } catch(Exception ex) {
                         file.AddError(ex);
                         return file;
@@ -132,14 +139,30 @@ namespace Eirshy.PB.PressXToJson.Managers {
                             ins.SourceIndex = insi;
                             ins.Owner = file;
                             if(ins.Disabled) continue;
-                            if(ins.AsFile is null) ins.TargetType = file.SourceFileType;
-                            else {
-                                ins.TargetName = Path.GetFileNameWithoutExtension(ins.AsFile);
+                            #region ins.TargetName = ...
+
+                            if(ins.AsName != null) ins.TargetName = ins.AsName;
+                            else if(ins.AsFile != null) {
+                                ins.TargetName =  Path.GetFileNameWithoutExtension(ins.AsFile);
+                            } else ins.TargetName = file.AmbientName;
+
+                            #endregion
+                            #region ins.TargetType = ...
+
+                            if(!string.IsNullOrWhiteSpace(ins.AsType)) {
+                                var at = AutoType.GetFrom(ins.AsType, file.InstructionNamespace, file.InstructionAssembly);
+                                if(!at.IsValid) throw new AutoTypingException(ins.AsType);
+                                ins.TargetType = at.ToType();
+
+                            } else if(ins.AsFile != null) {
                                 var fromRoot = ins.AsFile.StartsWith("~/");
                                 var insDir = Path.GetDirectoryName(ins.AsFile).Replace('\\', '/');
-                                ins.TargetRoute = fromRoot ? insDir.Substring(2) : Path.Combine(shortDir, insDir);
-                                ins.TargetType = _routefile2type(ins.TargetRoute, ins.TargetName);
-                            }
+                                var route = fromRoot ? insDir.Substring(2) : Path.Combine(shortDir, insDir);
+                                ins.TargetType = _routefile2type(route, ins.TargetName);
+
+                            } else ins.TargetType = file.AmbientType;
+
+                            #endregion
                             preproc.PreProcess(ins);
                         } catch(Exception ex) {
                             ins.AddError(ex);
@@ -168,8 +191,6 @@ namespace Eirshy.PB.PressXToJson.Managers {
                 ?? DataPathUtility.GetDataTypeFromPath(slashed)
             ;
             if(typePath is null) return null;
-
-            //TODO: support types from other libraries, ignoring if it's currently natively supported
 
             return typeof(ModManager).Assembly.GetType(
                 $"{nameof(PhantomBrigade)}.{nameof(PhantomBrigade.Data)}.{typePath}"

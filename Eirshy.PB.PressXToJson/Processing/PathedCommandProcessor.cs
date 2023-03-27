@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Newtonsoft.Json.Linq;
@@ -7,8 +8,8 @@ using Eirshy.PB.PressXToJson.Entities;
 using Eirshy.PB.PressXToJson.Enums;
 using Eirshy.PB.PressXToJson.Exceptions;
 
-namespace Eirshy.PB.PressXToJson.DataProcessing {
-    internal class PathedInstructionProcessor {
+namespace Eirshy.PB.PressXToJson.Processing {
+    internal class PathedCommandProcessor {
         static readonly JsonMergeSettings _concatWriteNull = new JsonMergeSettings(){
             MergeArrayHandling = MergeArrayHandling.Concat,
             MergeNullValueHandling = MergeNullValueHandling.Merge,
@@ -141,5 +142,6 @@ namespace Eirshy.PB.PressXToJson.DataProcessing {
             }
             return target;
         }
+
     }
 }
