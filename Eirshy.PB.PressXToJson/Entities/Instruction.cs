@@ -156,11 +156,13 @@ namespace Eirshy.PB.PressXToJson.Entities {
             if(other is null) return false;
             return Owner.Equals(other.Owner)
                 && SourceIndex == other.SourceIndex
+                && SubIndex == other.SubIndex
             ;
         }
         public override int GetHashCode()
             => Owner.GetHashCode()
             ^ SourceIndex.GetHashCode()
+            ^ SubIndex.GetHashCode()
         ;
 
         #endregion
